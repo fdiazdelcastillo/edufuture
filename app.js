@@ -140,10 +140,14 @@ function toggleHackMode() {
       user_name: currentUser.name
     });
     
+    console.log('🎭 HACK MODE ACTIVATED by', currentUser.name);
+    console.log('📡 Detection system will trigger force logout for other users...');
+    
     alert('🎭 Hack Mode ACTIVADO\n\n¡ATENCIÓN! Todos los usuarios (excepto tú) serán desconectados INMEDIATAMENTE.\n\nVerán la pantalla de hackeo al iniciar sesión.\n\n¡Esto es completamente lúdico y divertido! 😄');
   } else {
     hackModeActivatedBy = null;
     hackModeActivatedAt = null;
+    console.log('🔒 Hack Mode deactivated');
     alert('🔒 Hack Mode DESACTIVADO\n\nLa aplicación vuelve a su funcionamiento normal.');
   }
   
@@ -547,17 +551,32 @@ function checkHackModeStatus() {
   }
   
   // Detect if hack mode was just activated (false -> true)
-  if (hackModeEnabled && !previousHackModeState) {
+  const hackModeJustActivated = hackModeEnabled && !previousHackModeState;
+  
+  if (hackModeJustActivated) {
     // Hack mode was just activated
-    console.log('Hack Mode activated detected!');
+    console.log('🚨 Hack Mode activation detected!');
     
     // Check if current user is Super Admin
     if (currentUser.role !== 'Super Admin') {
       // Force logout this user
-      console.log('Force logout triggered for user:', currentUser.name);
+      console.log('⚠️ Force logout triggered for user:', currentUser.name);
       triggerForceLogout();
     } else {
-      console.log('Super Admin immunity - no logout');
+      console.log('✅ Super Admin immunity - no logout');
+    }
+  }
+  
+  // If hack mode is currently enabled and user is not Super Admin, show modal
+  // This catches users who log in while hack mode is already active
+  if (hackModeEnabled && currentUser.role !== 'Super Admin' && !hackModeJustActivated) {
+    const mainApp = document.getElementById('mainApp');
+    const forceLogoutModal = document.getElementById('forceLogoutModal');
+    
+    // Check if modal is not already showing and main app is visible
+    if (mainApp.style.display !== 'none' && forceLogoutModal.style.display === 'none') {
+      console.log('🔒 Hack mode is active, triggering force logout for:', currentUser.name);
+      triggerForceLogout();
     }
   }
   
@@ -582,21 +601,40 @@ function triggerForceLogout() {
 
 // Show force logout modal
 function showForceLogoutModal() {
+  console.log('🚨 Showing force logout modal...');
+  
   const modal = document.getElementById('forceLogoutModal');
   const countdownEl = document.getElementById('forceLogoutCountdown');
   
+  if (!modal) {
+    console.error('❌ Force logout modal not found!');
+    return;
+  }
+  
+  // Clear any existing countdown
+  if (forceLogoutCountdown) {
+    clearInterval(forceLogoutCountdown);
+  }
+  
   modal.style.display = 'flex';
+  console.log('✅ Modal display set to flex');
   
   // Start countdown
   let countdown = 3;
-  countdownEl.textContent = countdown;
+  if (countdownEl) {
+    countdownEl.textContent = countdown;
+  }
   
   // Play alert sound (optional - using beep pattern)
   playAlertSound();
   
   forceLogoutCountdown = setInterval(() => {
     countdown--;
-    countdownEl.textContent = countdown;
+    console.log('⏱️ Countdown:', countdown);
+    
+    if (countdownEl) {
+      countdownEl.textContent = countdown;
+    }
     
     if (countdown <= 0) {
       clearInterval(forceLogoutCountdown);
