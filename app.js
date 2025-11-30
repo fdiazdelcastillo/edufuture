@@ -57,9 +57,19 @@ let currentUser = null;
 // Hack mode state
 let hackModeEnabled = false;
 let countdownInterval = null;
+let hackModeCheckInterval = null;
+let forceLogoutCountdown = null;
+let previousHackModeState = false;
+let hackModeActivatedBy = null;
+let hackModeActivatedAt = null;
+
+// Session events log
+const sessionEventsLog = [];
 
 // Initialize application
 document.addEventListener('DOMContentLoaded', function() {
+  // Start hack mode detection
+  startHackModeDetection();
   // Initialize hack mode countdown
   initializeHackCountdown();
   // Show login modal on load
@@ -115,14 +125,29 @@ function setupAdminTabs() {
 
 // Toggle Hack Mode
 function toggleHackMode() {
+  const wasEnabled = hackModeEnabled;
   hackModeEnabled = !hackModeEnabled;
-  updateHackModeButton();
   
-  if (hackModeEnabled) {
-    alert('🎭 Hack Mode ACTIVADO\n\n¡Ahora todos los usuarios verán la pantalla de hackeo al iniciar sesión!\n\nEsto es completamente lúdico y divertido. 😄');
+  if (hackModeEnabled && currentUser) {
+    // Log activation event
+    hackModeActivatedBy = currentUser.id;
+    hackModeActivatedAt = new Date().toISOString();
+    
+    sessionEventsLog.push({
+      type: 'hack_mode_activated',
+      timestamp: hackModeActivatedAt,
+      activated_by: currentUser.id,
+      user_name: currentUser.name
+    });
+    
+    alert('🎭 Hack Mode ACTIVADO\n\n¡ATENCIÓN! Todos los usuarios (excepto tú) serán desconectados INMEDIATAMENTE.\n\nVerán la pantalla de hackeo al iniciar sesión.\n\n¡Esto es completamente lúdico y divertido! 😄');
   } else {
+    hackModeActivatedBy = null;
+    hackModeActivatedAt = null;
     alert('🔒 Hack Mode DESACTIVADO\n\nLa aplicación vuelve a su funcionamiento normal.');
   }
+  
+  updateHackModeButton();
 }
 
 // Update Hack Mode button
@@ -506,6 +531,162 @@ function toggleUserStatus(userId) {
   renderUsersTable();
 }
 
+// Start hack mode detection (checks every 2 seconds)
+function startHackModeDetection() {
+  hackModeCheckInterval = setInterval(() => {
+    checkHackModeStatus();
+  }, 2000); // Check every 2 seconds
+}
+
+// Check hack mode status
+function checkHackModeStatus() {
+  // Only check if user is logged in
+  if (!currentUser) {
+    previousHackModeState = hackModeEnabled;
+    return;
+  }
+  
+  // Detect if hack mode was just activated (false -> true)
+  if (hackModeEnabled && !previousHackModeState) {
+    // Hack mode was just activated
+    console.log('Hack Mode activated detected!');
+    
+    // Check if current user is Super Admin
+    if (currentUser.role !== 'Super Admin') {
+      // Force logout this user
+      console.log('Force logout triggered for user:', currentUser.name);
+      triggerForceLogout();
+    } else {
+      console.log('Super Admin immunity - no logout');
+    }
+  }
+  
+  // Update previous state
+  previousHackModeState = hackModeEnabled;
+}
+
+// Trigger force logout
+function triggerForceLogout() {
+  // Log the force logout event
+  sessionEventsLog.push({
+    type: 'force_logout',
+    timestamp: new Date().toISOString(),
+    user_id: currentUser.id,
+    user_name: currentUser.name,
+    reason: 'hack_mode_activated'
+  });
+  
+  // Show force logout modal
+  showForceLogoutModal();
+}
+
+// Show force logout modal
+function showForceLogoutModal() {
+  const modal = document.getElementById('forceLogoutModal');
+  const countdownEl = document.getElementById('forceLogoutCountdown');
+  
+  modal.style.display = 'flex';
+  
+  // Start countdown
+  let countdown = 3;
+  countdownEl.textContent = countdown;
+  
+  // Play alert sound (optional - using beep pattern)
+  playAlertSound();
+  
+  forceLogoutCountdown = setInterval(() => {
+    countdown--;
+    countdownEl.textContent = countdown;
+    
+    if (countdown <= 0) {
+      clearInterval(forceLogoutCountdown);
+      executeForceLogout();
+    }
+  }, 1000);
+}
+
+// Execute force logout
+function executeForceLogout() {
+  // Hide modal
+  document.getElementById('forceLogoutModal').style.display = 'none';
+  
+  // Clear user session
+  const userName = currentUser ? currentUser.name : 'Usuario';
+  currentUser = null;
+  
+  // Clear any session data
+  // Note: We cannot use localStorage in sandboxed environment
+  
+  // Reset UI
+  document.getElementById('mainApp').style.display = 'none';
+  
+  // Show login modal first
+  document.getElementById('loginModal').style.display = 'flex';
+  
+  // Then immediately show hack screen
+  setTimeout(() => {
+    showHackScreen();
+  }, 100);
+  
+  console.log(`Force logout executed for: ${userName}`);
+}
+
+// Play alert sound (creates beep pattern)
+function playAlertSound() {
+  // Create audio context for beep sound
+  try {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.value = 800;
+    oscillator.type = 'sine';
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.5);
+  } catch (e) {
+    // Audio context might not be available
+    console.log('Audio not available');
+  }
+}
+
+// View session events log (for Super Admin)
+function viewSessionEventsLog() {
+  if (!currentUser || currentUser.role !== 'Super Admin') {
+    return;
+  }
+  
+  if (sessionEventsLog.length === 0) {
+    alert('📋 Log de Eventos\n\nNo hay eventos registrados.');
+    return;
+  }
+  
+  let logText = '📋 LOG DE EVENTOS DE SESIÓN\n\n';
+  
+  sessionEventsLog.forEach((event, index) => {
+    const time = new Date(event.timestamp).toLocaleString('es');
+    logText += `[${index + 1}] ${time}\n`;
+    logText += `Tipo: ${event.type}\n`;
+    
+    if (event.type === 'hack_mode_activated') {
+      logText += `Activado por: ${event.user_name} (ID: ${event.activated_by})\n`;
+    } else if (event.type === 'force_logout') {
+      logText += `Usuario: ${event.user_name} (ID: ${event.user_id})\n`;
+      logText += `Razón: ${event.reason}\n`;
+    }
+    
+    logText += '\n';
+  });
+  
+  alert(logText);
+}
+
 // Make functions global for inline onclick handlers
 window.editUser = editUser;
 window.toggleUserStatus = toggleUserStatus;
@@ -513,3 +694,4 @@ window.toggleHackMode = toggleHackMode;
 window.handlePayRansom = handlePayRansom;
 window.handleLoseCourse = handleLoseCourse;
 window.handleContactAdmin = handleContactAdmin;
+window.viewSessionEventsLog = viewSessionEventsLog;
