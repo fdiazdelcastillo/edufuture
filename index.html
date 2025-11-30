@@ -1,0 +1,1765 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Plataforma educativa de orientación vocacional temprana con cursos multiidioma">
+    <meta name="theme-color" content="#2180A4">
+    <title>EduVocal - Orientación Vocacional</title>
+    <style>
+        :root {
+            --color-primary: #2180A4;
+            --color-primary-dark: #1a6885;
+            --color-secondary: #32b8c6;
+            --color-success: #27ae60;
+            --color-warning: #f39c12;
+            --color-error: #e74c3c;
+            --color-bg: #f5f5f5;
+            --color-surface: #ffffff;
+            --color-text: #2c3e50;
+            --color-text-light: #7f8c8d;
+            --color-border: #ecf0f1;
+            --space-8: 8px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-24: 24px;
+            --space-32: 32px;
+            --radius-base: 8px;
+            --radius-lg: 12px;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+        }
+
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0,0,0,0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--color-primary);
+            outline-offset: 2px;
+        }
+
+        /* Header & Navigation */
+        header {
+            background: var(--color-surface);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-16) var(--space-24);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: var(--space-12);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: var(--space-24);
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--color-text);
+            font-weight: 500;
+            transition: color 0.3s ease;
+            padding: var(--space-8) var(--space-12);
+            border-radius: var(--radius-base);
+        }
+
+        .nav-links a:hover {
+            color: var(--color-primary);
+            background-color: rgba(33, 128, 164, 0.05);
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: var(--space-16);
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        /* Main Container */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space-24);
+        }
+
+        /* Sections */
+        section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Dashboard */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-24);
+            margin-bottom: var(--space-32);
+        }
+
+        .card {
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-24);
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: var(--space-12);
+            color: var(--color-primary);
+        }
+
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-text);
+            margin-bottom: var(--space-8);
+        }
+
+        .card-progress {
+            width: 100%;
+            height: 8px;
+            background: var(--color-border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+            transition: width 0.3s ease;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: var(--space-16);
+            margin-bottom: var(--space-24);
+            border-bottom: 2px solid var(--color-border);
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: var(--space-12) var(--space-16);
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--color-text-light);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
+        .tab-btn:hover {
+            color: var(--color-primary);
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: var(--space-24);
+        }
+
+        .module-item {
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.3s ease;
+        }
+
+        .module-item:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .module-header {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            color: white;
+            padding: var(--space-24);
+            text-align: center;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .module-icon {
+            font-size: 2rem;
+            margin-bottom: var(--space-8);
+        }
+
+        .module-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .module-body {
+            padding: var(--space-16);
+        }
+
+        .module-desc {
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+            margin-bottom: var(--space-12);
+        }
+
+        .module-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            margin-bottom: var(--space-12);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-12) var(--space-24);
+            border-radius: var(--radius-base);
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            gap: var(--space-8);
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--color-border);
+            color: var(--color-text);
+        }
+
+        .btn-secondary:hover {
+            background: #ddd;
+        }
+
+        .btn-small {
+            padding: var(--space-8) var(--space-12);
+            font-size: 0.85rem;
+            width: auto;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: var(--space-24);
+        }
+
+        label {
+            display: block;
+            margin-bottom: var(--space-8);
+            font-weight: 500;
+            color: var(--color-text);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: var(--space-12);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-base);
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(33, 128, 164, 0.1);
+        }
+
+        /* Gamification */
+        .achievements {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: var(--space-16);
+            margin: var(--space-24) 0;
+        }
+
+        .badge {
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .badge:hover {
+            transform: scale(1.1);
+        }
+
+        .badge-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto var(--space-8);
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .badge-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        /* Level & XP */
+        .level-display {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            color: white;
+            padding: var(--space-24);
+            border-radius: var(--radius-lg);
+            text-align: center;
+            margin-bottom: var(--space-24);
+        }
+
+        .level-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .xp-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 6px;
+            margin-top: var(--space-16);
+            overflow: hidden;
+        }
+
+        .xp-progress {
+            height: 100%;
+            background: rgba(255,255,255,0.8);
+            transition: width 0.3s ease;
+        }
+
+        /* Admin Panel */
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .admin-table th {
+            background: var(--color-primary);
+            color: white;
+            padding: var(--space-16);
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .admin-table td {
+            padding: var(--space-16);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .admin-table tr:hover {
+            background: var(--color-bg);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-32);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: var(--space-16);
+            right: var(--space-16);
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--color-text-light);
+        }
+
+        /* Alerts */
+        .alert {
+            padding: var(--space-16);
+            border-radius: var(--radius-base);
+            margin-bottom: var(--space-16);
+            display: flex;
+            gap: var(--space-12);
+            align-items: center;
+        }
+
+        .alert-success {
+            background: rgba(39, 174, 96, 0.1);
+            border-left: 4px solid var(--color-success);
+            color: var(--color-success);
+        }
+
+        .alert-error {
+            background: rgba(231, 76, 60, 0.1);
+            border-left: 4px solid var(--color-error);
+            color: var(--color-error);
+        }
+
+        .alert-warning {
+            background: rgba(243, 156, 18, 0.1);
+            border-left: 4px solid var(--color-warning);
+            color: var(--color-warning);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                gap: var(--space-16);
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                gap: var(--space-12);
+                justify-content: center;
+            }
+
+            .tabs {
+                flex-wrap: nowrap;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .content-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+
+            .modal-content {
+                padding: var(--space-24);
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-bg: #1a1a1a;
+                --color-surface: #2d2d2d;
+                --color-text: #e0e0e0;
+                --color-text-light: #a0a0a0;
+                --color-border: #3d3d3d;
+            }
+        }
+
+        /* Offline indicator */
+        .offline-banner {
+            display: none;
+            background: var(--color-warning);
+            color: white;
+            padding: var(--space-12) var(--space-24);
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .offline-banner.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Offline Banner -->
+    <div class="offline-banner" id="offlineBanner">
+        <span aria-live="polite">⚠️ Modo sin conexión - Cambios se sincronizarán cuando recupere conexión</span>
+    </div>
+
+    <!-- Header -->
+    <header role="banner">
+        <nav role="navigation" aria-label="Principal">
+            <a href="#" class="logo" onclick="switchSection('dashboard')">
+                <span>🎓</span> EduVocal
+            </a>
+            <ul class="nav-links">
+                <li><a href="#" onclick="switchSection('dashboard')">Inicio</a></li>
+                <li><a href="#" onclick="switchSection('vocational')">Orientación</a></li>
+                <li><a href="#" onclick="switchSection('languages')">Idiomas</a></li>
+                <li><a href="#" onclick="switchSection('skills')">Habilidades</a></li>
+                <li><a href="#" onclick="switchSection('progress')">Progreso</a></li>
+                <li><a href="#" onclick="switchSection('admin')">Admin</a></li>
+            </ul>
+            <div class="user-menu">
+                <button class="avatar" onclick="toggleUserMenu()" title="Menú de usuario">JD</button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main role="main">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="active">
+            <h1>Bienvenido a EduVocal</h1>
+            <p style="color: var(--color-text-light); margin-bottom: var(--space-24);">Tu plataforma de orientación vocacional y desarrollo de habilidades</p>
+
+            <div class="level-display">
+                <div class="level-number" id="userLevel">1</div>
+                <p>Nivel actual</p>
+                <div class="xp-bar">
+                    <div class="xp-progress" id="xpProgress" style="width: 25%"></div>
+                </div>
+                <p style="margin-top: var(--space-12); font-size: 0.9rem;">250 / 1000 XP</p>
+            </div>
+
+            <h2 style="margin-bottom: var(--space-16);">Tu Progreso</h2>
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="card-title">Cursos Completados</div>
+                    <div class="card-value">3</div>
+                    <div class="card-progress">
+                        <div class="progress-bar" style="width: 30%"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Habilidades Desarrolladas</div>
+                    <div class="card-value">7</div>
+                    <div class="card-progress">
+                        <div class="progress-bar" style="width: 70%"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Logros Desbloqueados</div>
+                    <div class="card-value">5</div>
+                    <div class="card-progress">
+                        <div class="progress-bar" style="width: 50%"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Racha de Aprendizaje</div>
+                    <div class="card-value">12</div>
+                    <p style="color: var(--color-text-light); font-size: 0.9rem;">días consecutivos</p>
+                </div>
+            </div>
+
+            <h2 style="margin: var(--space-32) 0 var(--space-16);">Logros Recientes</h2>
+            <div class="achievements">
+                <div class="badge">
+                    <div class="badge-icon">🏆</div>
+                    <div class="badge-name">Primer paso</div>
+                </div>
+                <div class="badge">
+                    <div class="badge-icon">🎓</div>
+                    <div class="badge-name">Aprendiz</div>
+                </div>
+                <div class="badge">
+                    <div class="badge-icon">⭐</div>
+                    <div class="badge-name">5 Estrellas</div>
+                </div>
+                <div class="badge">
+                    <div class="badge-icon">🚀</div>
+                    <div class="badge-name">Ascenso Rápido</div>
+                </div>
+                <div class="badge">
+                    <div class="badge-icon">🌍</div>
+                    <div class="badge-name">Políglota</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vocational Guidance Section -->
+        <section id="vocational">
+            <h1>Orientación Vocacional Temprana</h1>
+            <p style="color: var(--color-text-light); margin-bottom: var(--space-24);">Descubre tu vocación a través de pruebas personalizadas y orientación profesional</p>
+
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('vocational', 'assessment')">Evaluación</button>
+                <button class="tab-btn" onclick="switchTab('vocational', 'results')">Mis Resultados</button>
+                <button class="tab-btn" onclick="switchTab('vocational', 'careers')">Carreras Recomendadas</button>
+            </div>
+
+            <div id="vocational-assessment" class="tab-content">
+                <div class="card">
+                    <h2>Test de Habilidades Vocacionales</h2>
+                    <p style="color: var(--color-text-light); margin-bottom: var(--space-24);">Responde estas preguntas para identificar tus fortalezas y preferencias profesionales</p>
+                    
+                    <div class="form-group">
+                        <label>¿Cuál es tu área de interés principal?</label>
+                        <select>
+                            <option>-- Selecciona una opción --</option>
+                            <option>Tecnología e Informática</option>
+                            <option>Salud y Medicina</option>
+                            <option>Artes y Diseño</option>
+                            <option>Negocios y Administración</option>
+                            <option>Educación</option>
+                            <option>Ingeniería</option>
+                            <option>Ciencias Sociales</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Prefieres trabajar en equipo o de forma independiente?</label>
+                        <select>
+                            <option>-- Selecciona una opción --</option>
+                            <option>Trabajo en equipo</option>
+                            <option>Independiente</option>
+                            <option>Ambos</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Tu fortaleza principal es? (1-5 puntos)</label>
+                        <input type="range" min="1" max="5" value="3" style="width: 100%;">
+                        <small style="color: var(--color-text-light);">1=Creatividad, 5=Análisis</small>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="submitVocationalAssessment()">Enviar Evaluación</button>
+                </div>
+            </div>
+
+            <div id="vocational-results" class="tab-content" style="display: none;">
+                <div class="card">
+                    <h2>Tus Resultados Vocacionales</h2>
+                    <p style="color: var(--color-text-light); margin-bottom: var(--space-24);">Basado en tu evaluación, aquí están tus perfiles</p>
+                    
+                    <div style="margin-bottom: var(--space-24);">
+                        <h3 style="margin-bottom: var(--space-8);">Perfil Tecnológico: 85%</h3>
+                        <div class="card-progress">
+                            <div class="progress-bar" style="width: 85%"></div>
+                        </div>
+                        <p style="color: var(--color-text-light); font-size: 0.9rem; margin-top: var(--space-8);">Fortaleza en resolución de problemas y pensamiento lógico</p>
+                    </div>
+
+                    <div style="margin-bottom: var(--space-24);">
+                        <h3 style="margin-bottom: var(--space-8);">Perfil Creativo: 72%</h3>
+                        <div class="card-progress">
+                            <div class="progress-bar" style="width: 72%"></div>
+                        </div>
+                        <p style="color: var(--color-text-light); font-size: 0.9rem; margin-top: var(--space-8);">Excelente capacidad para innovar y pensar diferente</p>
+                    </div>
+
+                    <div style="margin-bottom: var(--space-24);">
+                        <h3 style="margin-bottom: var(--space-8);">Perfil Administrativo: 61%</h3>
+                        <div class="card-progress">
+                            <div class="progress-bar" style="width: 61%"></div>
+                        </div>
+                        <p style="color: var(--color-text-light); font-size: 0.9rem; margin-top: var(--space-8);">Buena organización y capacidad de gestión</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="vocational-careers" class="tab-content" style="display: none;">
+                <div class="content-grid">
+                    <div class="module-item">
+                        <div class="module-header">
+                            <div class="module-icon">💻</div>
+                            <div class="module-title">Desarrollador de Software</div>
+                        </div>
+                        <div class="module-body">
+                            <p class="module-desc">Coincidencia: 92%</p>
+                            <button class="btn btn-primary btn-small">Ver más</button>
+                        </div>
+                    </div>
+
+                    <div class="module-item">
+                        <div class="module-header">
+                            <div class="module-icon">🎨</div>
+                            <div class="module-title">Diseñador UX/UI</div>
+                        </div>
+                        <div class="module-body">
+                            <p class="module-desc">Coincidencia: 88%</p>
+                            <button class="btn btn-primary btn-small">Ver más</button>
+                        </div>
+                    </div>
+
+                    <div class="module-item">
+                        <div class="module-header">
+                            <div class="module-icon">📊</div>
+                            <div class="module-title">Analista de Datos</div>
+                        </div>
+                        <div class="module-body">
+                            <p class="module-desc">Coincidencia: 85%</p>
+                            <button class="btn btn-primary btn-small">Ver más</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Languages Section -->
+        <section id="languages">
+            <h1>Cursos de Idiomas</h1>
+            <p style="color: var(--color-text-light); margin-bottom: var(--space-24);">Aprende nuevos idiomas con lecciones interactivas</p>
+
+            <div class="content-grid">
+                <div class="module-item">
+                    <div class="module-header" style="background: linear-gradient(135deg, #FF6B6B, #FF8E8E);">
+                        <div class="module-icon">🇬🇧</div>
+                        <div class="module-title">[translate:English]</div>
+                    </div>
+                    <div class="module-body">
+                        <p class="module-desc">Domina el idioma más hablado</p>
+                        <div class="module-stats">
+                            <span>9/12 lecciones</span>
+                            <span>Nivel: Intermedio</span>
+                        </div>
+                        <div class="card-progress" style="margin-bottom: var(--space-12); height: 6px;">
+                            <div class="progress-bar" style="width: 75%"></div>
+                        </div>
+                        <button class="btn btn-primary btn-small" onclick="loadCourseContent('english')">Continuar</button>
+                    </div>
+                </div>
+
+                <div class="module-item">
+                    <div class="module-header" style="background: linear-gradient(135deg, #4ECDC4, #6FE3DD);">
+                        <div class="module-icon">🇨🇳</div>
+                        <div class="module-title">[translate:普通话]</div>
+                    </div>
+                    <div class="module-body">
+                        <p class="module-desc">Aprende [translate:mandarín], la lengua del futuro</p>
+                        <div class="module-stats">
+                            <span>6/18 lecciones</span>
+                            <span>Nivel: Básico</span>
+                        </div>
+                        <div class="card-progress" style="margin-bottom: var(--space-12); height: 6px;">
+                            <div class="progress-bar" style="width: 33%"></div>
+                        </div>
+                        <button class="btn btn-primary btn-small" onclick="loadCourseContent('mandarin')">Continuar</button>
+                    </div>
+                </div>
+
+                <div class="module-item">
+                    <div class="module-header" style="background: linear-gradient(135deg, #FFB347, #FFDAB9);">
+                        <div class="module-icon">🇫🇷</div>
+                        <div class="module-title">[translate:Français]</div>
+                    </div>
+                    <div class="module-body">
+                        <p class="module-desc">Explora la elegancia del idioma francés</p>
+                        <div class="module-stats">
+                            <span>8/15 lecciones</span>
+                            <span>Nivel: Intermedio</span>
+                        </div>
+                        <div class="card-progress" style="margin-bottom: var(--space-12); height: 6px;">
+                            <div class="progress-bar" style="width: 53%"></div>
+                        </div>
+                        <button class="btn btn-primary btn-small" onclick="loadCourseContent('french')">Continuar</button>
+                    </div>
+                </div>
+
+                <div class="module-item">
+                    <div class="module-header" style="background: linear-gradient(135deg, #A8E6CF, #C8F7DC);">
+                        <div class="module-icon">🇵🇹</div>
+                        <div class="module-title">[translate:Português]</div>
+                    </div>
+                    <div class="module-body">
+                        <p class="module-desc">Conéctate con hablantes de portugués</p>
+                        <div class="module-stats">
+                            <span>11/14 lecciones</span>
+                            <span>Nivel: Avanzado</span>
+                        </div>
+                        <div class="card-progress" style="margin-bottom: var(--space-12); height: 6px;">
+                            <div class="progress-bar" style="width: 79%"></div>
+                        </div>
+                        <button class="btn btn-primary btn-small" onclick="loadCourseContent('portuguese')">Continuar</button>
+                    </div>
+                </div>
+
+                <div class="module-item">
+                    <div class="module-header" style="background: linear-gradient(135deg, #FFD93D, #FFE66D);">
+                        <div class="module-icon">🇪🇸</div>
+                        <div class="module-title">[translate:Español]</div>
+                    </div>
+                    <div class="module-body">
+                        <p class="module-desc">Perfecciona tu [translate:español] nativo</p>
+                        <div class="module-stats">
+                            <span>✓ 10/10 lecciones</span>
+                            <span>Nivel: Experto</span>
+                        </div>
+                        <div class="card-progress" style="margin-bottom: var(--space-12); height: 6px;">
+                            <div class="progress-bar" style="width: 100%"></div>
+                        </div>
+                        <button class="btn btn-primary btn-small" onclick="loadCourseContent('spanish')">Revisar</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills">
+            <h1>Desarrollo de Habilidades</h1>
+            <p style="color: var(--color-text-light); margin-bottom: var(--space-24);">Entrena habilidades cognitivas y profesionales</p>
+
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('skills', 'cognitive')">Cognitivas</button>
+                <button class="tab-btn" onclick="switchTab('skills', 'career')">Profesionales</button>
+            </div>
+
+            <div id="skills-cognitive" class="tab-content">
+                <div class="content-grid">
+                    <div class="module-item" data-skill-cognitive="memory">
+                        <div class="module-header" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                            <div class="module-icon">🧠</div>
+                            <div class="module-title">Memoria</div>
+                        </div>
+                        <div class="module-body">
+                            <p class="module-desc">Mejora tu capacidad de retención</p>
+                            <div class="module-stats">
+                                <span>Progreso: 45% | <span class="skill-score">7.8</span>/10</span>
+                            </div>
+                            <div class="card-progress" style="margin-bottom: var(--space-12); height: 6px;">
+                                <div class="progress-bar" style="width: 45%"></div>
+                            </div>
+                            <button class="btn btn-primary btn-small" onclick="startCognitiveTraining('memory')">Entrenar</button>
+                        </div>
+                    </div>
+
+                    <div class="module-item" data-skill-cognitive="speed">
+                        <div class="module-header" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                            <div class="module-icon">⚡</div>
+                            <div class="module-title">Velocidad Mental</div>
+                        </div>
+                        <div class="module-body">
+                            <p class="module-desc">Agilidad en la resolución de problemas</p>
+                            <div class="module-stats">
+                                <span>Progreso: 62% | <span class="skill-score">8.4</span>/10</span>
+                            </div>
+                            <div class="card-progress" style="margin-bottom: var(--space-12); height: 6px;">
+                                <div class="progress-bar" style="width: 62%"></div>
+                            </div>
+                            <button class="btn btn-primary btn-small" onclick="startCognitiveTraining('speed')">Entrenar</button>
+                        </div>
+                    </div>
+
+                    <div class="module-item" data-skill-cognitive="focus">
+                        <div class="module-header" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                            <div class="module-icon">🔍</div>
+                            <div class="module-title">Concentración</div>
+                        </div>
+                        <div class="module-body">
+                            <p class="module-desc">Entrena tu enfoque y atención</p>
+                            <div class="module-stats">
+                                <span>Progreso: 38% | <span class="skill-score">7.2</span>/10</span>
+                            </div>
+                            <div class="card-progress" style="margin-bottom: var(--space-12); height: 6px;">
+                                <div class="progress-bar" style="width: 38%"></div>
+                            </div>
+                            <button class="btn btn-primary btn-small" onclick="startCognitiveTraining('focus')">Entrenar</button>
+                        </div>
+                    </div>
+
+                    <div class="module-item" data-skill-cognitive="logic">
+                        <div class="module-header" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
+                            <div class="module-icon">🎯</div>
+                            <div class="module-title">Lógica</div>
+                        </div>
+                        <div class="module-body">
+                            <p class="module-desc">Desarrolla pensamiento analítico</p>
+                            <div class="module-stats">
+                                <span>Progreso: 55% | <span class="skill-score">8.1</span>/10</span>
+                            </div>
+                            <div class="card-progress" style="margin-bottom: var(--space-12); height: 6px;">
+                                <div class="progress-bar" style="width: 55%"></div>
+                            </div>
+                            <button class="btn btn-primary btn-small" onclick="startCognitiveTraining('logic')">Entrenar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="skills-career" class="tab-content" style="display: none;">
+                <div class="content-grid">
+                    <div class="module-item" data-skill-career="communication">
+                        <div class="module-header" style="background: linear-gradient(135deg, #fa709a, #fee140);">
+                            <div class="module-icon">💬</div>
+                            <div class="module-title">Comunicación</div>
+                        </div>
+                        <div class="module-body">
+                            <p class="module-desc">Mejora tu expresión y presentación</p>
+                            <div class="module-stats">
+                                <span>Progreso: 70% | <span class="skill-score">8.9</span>/10</span>
+                            </div>
+                            <div class="card-progress" style="margin-bottom: var(--space-12); height: 6px;">
+                                <div class="progress-bar" style="width: 70%"></div>
+                            </div>
+                            <button class="btn btn-primary btn-small" onclick="startCareerTraining('communication')">Practicar</button>
+                        </div>
+                    </div>
+
+                    <div class="module-item" data-skill-career="teamwork">
+                        <div class="module-header" style="background: linear-gradient(135deg, #a8edea, #fed6e3);">
+                            <div class="module-icon">🤝</div>
+                            <div class="module-title">Trabajo en Equipo</div>
+                        </div>
+                        <div class="module-body">
+                            <p class="module-desc">Desarrolla colaboración efectiva</p>
+                            <div class="module-stats">
+                                <span>Progreso: 58% | <span class="skill-score">8.2</span>/10</span>
+                            </div>
+                            <div class="card-progress" style="margin-bottom: var(--space-12); height: 6px;">
+                                <div class="progress-bar" style="width: 58%"></div>
+                            </div>
+                            <button class="btn btn-primary btn-small" onclick="startCareerTraining('teamwork')">Practicar</button>
+                        </div>
+                    </div>
+
+                    <div class="module-item" data-skill-career="leadership">
+                        <div class="module-header" style="background: linear-gradient(135deg, #ff9a56, #ff6a88);">
+                            <div class="module-icon">🚀</div>
+                            <div class="module-title">Liderazgo</div>
+                        </div>
+                        <div class="module-body">
+                            <p class="module-desc">Cultiva habilidades de dirección</p>
+                            <div class="module-stats">
+                                <span>Progreso: 42% | <span class="skill-score">7.6</span>/10</span>
+                            </div>
+                            <div class="card-progress" style="margin-bottom: var(--space-12); height: 6px;">
+                                <div class="progress-bar" style="width: 42%"></div>
+                            </div>
+                            <button class="btn btn-primary btn-small" onclick="startCareerTraining('leadership')">Practicar</button>
+                        </div>
+                    </div>
+
+                    <div class="module-item" data-skill-career="projectManagement">
+                        <div class="module-header" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                            <div class="module-icon">📊</div>
+                            <div class="module-title">Gestión de Proyectos</div>
+                        </div>
+                        <div class="module-body">
+                            <p class="module-desc">Planificación y organización</p>
+                            <div class="module-stats">
+                                <span>Progreso: 51% | <span class="skill-score">8.0</span>/10</span>
+                            </div>
+                            <div class="card-progress" style="margin-bottom: var(--space-12); height: 6px;">
+                                <div class="progress-bar" style="width: 51%"></div>
+                            </div>
+                            <button class="btn btn-primary btn-small" onclick="startCareerTraining('projectManagement')">Practicar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Progress Section -->
+        <section id="progress">
+            <h1>Evaluación y Seguimiento</h1>
+            <p style="color: var(--color-text-light); margin-bottom: var(--space-24);">Visualiza tu evolución académica</p>
+
+            <div class="card" style="margin-bottom: var(--space-24);">
+                <h2>Desempeño General</h2>
+                <div style="margin-top: var(--space-24);">
+                    <h3 style="margin-bottom: var(--space-8);">Promedio de Calificaciones: 8.5/10</h3>
+                    <div class="card-progress">
+                        <div class="progress-bar" style="width: 85%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-bottom: var(--space-24);">
+                <h2>Evolución por Módulo</h2>
+                <table class="admin-table" style="margin-top: var(--space-16);">
+                    <thead>
+                        <tr>
+                            <th>Módulo</th>
+                            <th>Calificación</th>
+                            <th>Progreso</th>
+                            <th>Tendencia</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Orientación Vocacional</td>
+                            <td>9.2</td>
+                            <td>
+                                <div class="card-progress" style="width: 150px; height: 6px;">
+                                    <div class="progress-bar" style="width: 92%"></div>
+                                </div>
+                            </td>
+                            <td>📈 Mejorando</td>
+                        </tr>
+                        <tr>
+                            <td>Idiomas</td>
+                            <td>8.1</td>
+                            <td>
+                                <div class="card-progress" style="width: 150px; height: 6px;">
+                                    <div class="progress-bar" style="width: 81%"></div>
+                                </div>
+                            </td>
+                            <td>➡️ Estable</td>
+                        </tr>
+                        <tr>
+                            <td>Habilidades Cognitivas</td>
+                            <td>7.8</td>
+                            <td>
+                                <div class="card-progress" style="width: 150px; height: 6px;">
+                                    <div class="progress-bar" style="width: 78%"></div>
+                                </div>
+                            </td>
+                            <td>📉 A mejorar</td>
+                        </tr>
+                        <tr>
+                            <td>Habilidades Profesionales</td>
+                            <td>8.7</td>
+                            <td>
+                                <div class="card-progress" style="width: 150px; height: 6px;">
+                                    <div class="progress-bar" style="width: 87%"></div>
+                                </div>
+                            </td>
+                            <td>📈 Mejorando</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>Análisis Detallado</h2>
+                <div style="margin-top: var(--space-24);">
+                    <h3 style="margin-bottom: var(--space-8); color: var(--color-success);">✓ Fortalezas</h3>
+                    <ul style="margin-bottom: var(--space-24);">
+                        <li>Excelente comprensión de conceptos vocacionales</li>
+                        <li>Dedicación constante al aprendizaje</li>
+                        <li>Participación activa en ejercicios de habilidades</li>
+                    </ul>
+
+                    <h3 style="margin-bottom: var(--space-8); color: var(--color-warning);">⚠ Áreas de Mejora</h3>
+                    <ul>
+                        <li>Enfoque en habilidades cognitivas avanzadas</li>
+                        <li>Consistencia en lecciones de idiomas</li>
+                        <li>Práctica de comunicación en vivo</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Admin Section -->
+        <section id="admin">
+            <h1>Panel Administrativo</h1>
+            <p style="color: var(--color-text-light); margin-bottom: var(--space-24);">Gestiona usuarios, contenido y reportes</p>
+
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('admin', 'users')">Usuarios</button>
+                <button class="tab-btn" onclick="switchTab('admin', 'content')">Contenido</button>
+                <button class="tab-btn" onclick="switchTab('admin', 'reports')">Reportes</button>
+                <button class="tab-btn" onclick="switchTab('admin', 'settings')">Configuración</button>
+            </div>
+
+            <div id="admin-users" class="tab-content">
+                <div class="card">
+                    <h2>Gestión de Usuarios</h2>
+                    <button class="btn btn-primary" style="margin-bottom: var(--space-24);" onclick="addNewUser()">+ Nuevo Usuario</button>
+
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Rol</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#001</td>
+                                <td>Juan Díaz</td>
+                                <td>juan@example.com</td>
+                                <td>Estudiante</td>
+                                <td><span class="badge-icon" style="width: 20px; height: 20px; font-size: 0.8rem; margin: 0;">✓</span></td>
+                                <td>
+                                    <button class="btn btn-secondary btn-small" onclick="editUser(1)">Editar</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#002</td>
+                                <td>María García</td>
+                                <td>maria@example.com</td>
+                                <td>Estudiante</td>
+                                <td><span class="badge-icon" style="width: 20px; height: 20px; font-size: 0.8rem; margin: 0;">✓</span></td>
+                                <td>
+                                    <button class="btn btn-secondary btn-small" onclick="editUser(2)">Editar</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#003</td>
+                                <td>Carlos López</td>
+                                <td>carlos@example.com</td>
+                                <td>Tutor Parental</td>
+                                <td><span class="badge-icon" style="width: 20px; height: 20px; font-size: 0.8rem; margin: 0;">✓</span></td>
+                                <td>
+                                    <button class="btn btn-secondary btn-small" onclick="editUser(3)">Editar</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="admin-content" class="tab-content" style="display: none;">
+                <div class="card">
+                    <h2>Gestión de Contenido</h2>
+                    <button class="btn btn-primary" style="margin-bottom: var(--space-24);" onclick="addNewCourse()">+ Nuevo Curso</button>
+
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Tipo</th>
+                                <th>Lecciones</th>
+                                <th>Estudiantes</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Inglés Básico</td>
+                                <td>Idioma</td>
+                                <td>12</td>
+                                <td>234</td>
+                                <td>Activo</td>
+                                <td><button class="btn btn-secondary btn-small">Editar</button></td>
+                            </tr>
+                            <tr>
+                                <td>Habilidades Cognitivas</td>
+                                <td>Habilidades</td>
+                                <td>8</td>
+                                <td>156</td>
+                                <td>Activo</td>
+                                <td><button class="btn btn-secondary btn-small">Editar</button></td>
+                            </tr>
+                            <tr>
+                                <td>Orientación Vocacional</td>
+                                <td>Orientación</td>
+                                <td>6</td>
+                                <td>189</td>
+                                <td>Activo</td>
+                                <td><button class="btn btn-secondary btn-small">Editar</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="admin-reports" class="tab-content" style="display: none;">
+                <div class="card">
+                    <h2>Reportes de Actividad</h2>
+                    <div style="margin-top: var(--space-24);">
+                        <div style="margin-bottom: var(--space-24);">
+                            <h3 style="margin-bottom: var(--space-8);">Usuarios Activos (últimos 30 días)</h3>
+                            <div class="card-value">1,247</div>
+                            <p style="color: var(--color-success); font-weight: 500;">↑ 12.5% vs mes anterior</p>
+                        </div>
+
+                        <div style="margin-bottom: var(--space-24);">
+                            <h3 style="margin-bottom: var(--space-8);">Horas de Aprendizaje Totales</h3>
+                            <div class="card-value">3,542</div>
+                            <p style="color: var(--color-success); font-weight: 500;">↑ 8.2% vs mes anterior</p>
+                        </div>
+
+                        <div>
+                            <h3 style="margin-bottom: var(--space-8);">Tasa de Finalización de Cursos</h3>
+                            <div class="card-value">78%</div>
+                            <p style="color: var(--color-text-light);">Excelente desempeño</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="admin-settings" class="tab-content" style="display: none;">
+                <div class="card">
+                    <h2>Configuración del Sistema</h2>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" checked> Habilitar modo offline
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" checked> Encriptación de datos
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" checked> Controles parentales activos
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Idioma predeterminado</label>
+                        <select>
+                            <option selected>[translate:Español]</option>
+                            <option>[translate:English]</option>
+                            <option>[translate:Português]</option>
+                            <option>[translate:Français]</option>
+                            <option>[translate:普通话]</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nivel de seguridad WCAG</label>
+                        <select>
+                            <option>AA (Recomendado)</option>
+                            <option>AAA (Máximo)</option>
+                            <option>A (Básico)</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal for Parental Controls -->
+    <div class="modal" id="parentalModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="toggleModal('parentalModal')">✕</button>
+            <h2>Control Parental</h2>
+            <p style="color: var(--color-text-light); margin-bottom: var(--space-24);">Supervisa el progreso académico de tu hijo</p>
+
+            <div class="form-group">
+                <label>Estudiante</label>
+                <select>
+                    <option>-- Selecciona estudiante --</option>
+                    <option>Juan Díaz</option>
+                    <option>María García</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Límite de tiempo diario (minutos)</label>
+                <input type="number" value="120" min="30" max="480">
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" checked> Recibir reportes semanales
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" checked> Restricción de contenido sensible
+                </label>
+            </div>
+
+            <button class="btn btn-primary" onclick="toggleModal('parentalModal')">Guardar Controles</button>
+        </div>
+    </div>
+
+    <script>
+        // ===== APPLICATION STATE =====
+        const appState = {
+            currentUser: {
+                id: 1,
+                name: 'Juan Díaz',
+                email: 'juan@example.com',
+                role: 'student',
+                level: 3,
+                xp: 750,
+                maxXp: 1000
+            },
+            offlineMode: false,
+            isOnline: navigator.onLine,
+            dataStore: {},
+            vocationalResults: {
+                tech: 85,
+                creative: 72,
+                admin: 61
+            },
+            vocationalCareers: [
+                { name: 'Desarrollador de Software', match: 92, description: 'Crea aplicaciones y sistemas' },
+                { name: 'Diseñador UX/UI', match: 88, description: 'Diseña interfaces intuitivas' },
+                { name: 'Analista de Datos', match: 85, description: 'Analiza e interpreta datos' }
+            ],
+            languageCourses: {
+                english: { lessons: 12, completed: 9, level: 'Intermedio' },
+                mandarin: { lessons: 18, completed: 6, level: 'Básico' },
+                french: { lessons: 15, completed: 8, level: 'Intermedio' },
+                portuguese: { lessons: 14, completed: 11, level: 'Avanzado' },
+                spanish: { lessons: 10, completed: 10, level: 'Avanzado' }
+            },
+            cognitiveLessons: {
+                memory: { progress: 45, score: 7.8, tasks: 15 },
+                speed: { progress: 62, score: 8.4, tasks: 20 },
+                focus: { progress: 38, score: 7.2, tasks: 12 },
+                logic: { progress: 55, score: 8.1, tasks: 18 }
+            },
+            careerSkills: {
+                communication: { progress: 70, score: 8.9, tasks: 16 },
+                teamwork: { progress: 58, score: 8.2, tasks: 14 },
+                leadership: { progress: 42, score: 7.6, tasks: 11 },
+                projectManagement: { progress: 51, score: 8.0, tasks: 13 }
+            },
+            achievements: [
+                { id: 1, name: 'Primer paso', icon: '🏆', unlocked: true },
+                { id: 2, name: 'Aprendiz', icon: '🎓', unlocked: true },
+                { id: 3, name: '5 Estrellas', icon: '⭐', unlocked: true },
+                { id: 4, name: 'Ascenso Rápido', icon: '🚀', unlocked: true },
+                { id: 5, name: 'Políglota', icon: '🌍', unlocked: true },
+                { id: 6, name: 'Mente Maestra', icon: '🧠', unlocked: false },
+                { id: 7, name: 'Maestro Cognitivo', icon: '💡', unlocked: false }
+            ],
+            users: [
+                { id: 1, name: 'Juan Díaz', email: 'juan@example.com', role: 'Estudiante', status: true },
+                { id: 2, name: 'María García', email: 'maria@example.com', role: 'Estudiante', status: true },
+                { id: 3, name: 'Carlos López', email: 'carlos@example.com', role: 'Tutor Parental', status: true }
+            ],
+            courses: [
+                { id: 1, name: 'Inglés Básico', type: 'Idioma', lessons: 12, students: 234, status: 'Activo' },
+                { id: 2, name: 'Habilidades Cognitivas', type: 'Habilidades', lessons: 8, students: 156, status: 'Activo' },
+                { id: 3, name: 'Orientación Vocacional', type: 'Orientación', lessons: 6, students: 189, status: 'Activo' }
+            ]
+        };
+
+        // ===== OFFLINE SUPPORT =====
+        window.addEventListener('online', () => {
+            appState.isOnline = true;
+            updateOfflineBanner();
+            syncData();
+        });
+
+        window.addEventListener('offline', () => {
+            appState.isOnline = false;
+            updateOfflineBanner();
+        });
+
+        function updateOfflineBanner() {
+            const banner = document.getElementById('offlineBanner');
+            if (!appState.isOnline) {
+                banner.classList.add('active');
+            } else {
+                banner.classList.remove('active');
+            }
+        }
+
+        function syncData() {
+            // Simulated sync when connection is restored
+            console.log('Sincronizando datos...');
+            // In production, this would send queued updates to the server
+        }
+
+        // ===== DATA PERSISTENCE (In-Memory) =====
+        function saveData(key, value) {
+            appState.dataStore[key] = value;
+            // In production with online access, this would sync to server
+            if (appState.isOnline) {
+                console.log('Guardando datos en servidor:', key);
+            }
+        }
+
+        function loadData(key) {
+            return appState.dataStore[key];
+        }
+
+        // ===== ENCRYPTION (SIMULATION) =====
+        function encryptData(data) {
+            // Simplified encryption simulation
+            return 'encrypted_' + btoa(JSON.stringify(data));
+        }
+
+        function decryptData(encryptedData) {
+            // Simplified decryption simulation
+            try {
+                return JSON.parse(atob(encryptedData.replace('encrypted_', '')));
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // ===== UI NAVIGATION =====
+        function switchSection(sectionId) {
+            event?.preventDefault();
+            
+            // Hide all sections
+            document.querySelectorAll('section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Show selected section
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.classList.add('active');
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            // Update nav links
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.classList.remove('active');
+            });
+        }
+
+        function switchTab(section, tabName) {
+            // Hide all tab contents
+            document.querySelectorAll(`#${section} .tab-content`).forEach(content => {
+                content.style.display = 'none';
+            });
+
+            // Show selected tab
+            const tabContent = document.getElementById(`${section}-${tabName}`);
+            if (tabContent) {
+                tabContent.style.display = 'block';
+            }
+
+            // Update active tab button
+            event.target.parentElement.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // ===== VOCATIONAL FEATURES =====
+        function submitVocationalAssessment() {
+            const area = document.querySelector('#vocational-assessment select').value;
+            const teamwork = document.querySelectorAll('#vocational-assessment select')[1].value;
+            const creativity = document.querySelector('#vocational-assessment input[type="range"]').value;
+
+            if (!area || !teamwork) {
+                showAlert('warning', '⚠️ Por favor completa todos los campos');
+                return;
+            }
+
+            addXP(50);
+            showAlert('success', '✓ Evaluación guardada exitosamente');
+            saveData('vocationalAssessment', { area, teamwork, creativity });
+        }
+
+        function loadCourseContent(language) {
+            const course = appState.languageCourses[language];
+            if (course) {
+                addXP(25);
+                showAlert('success', `Iniciando ${language}... Progreso: ${course.completed}/${course.lessons}`);
+            }
+        }
+
+        // ===== COGNITIVE TRAINING =====
+        function startCognitiveTraining(skillType) {
+            const skill = appState.cognitiveLessons[skillType];
+            if (skill) {
+                const newScore = Math.min(10, skill.score + (Math.random() * 0.5));
+                appState.cognitiveLessons[skillType].score = parseFloat(newScore.toFixed(1));
+                appState.cognitiveLessons[skillType].progress = Math.min(100, skill.progress + 8);
+                
+                addXP(30);
+                showAlert('success', `🧠 Entrenamiento completado. Nueva puntuación: ${newScore.toFixed(1)}`);
+                updateSkillsDisplay();
+            }
+        }
+
+        function updateSkillsDisplay() {
+            // Cognitive skills update
+            Object.keys(appState.cognitiveLessons).forEach(skill => {
+                const skillData = appState.cognitiveLessons[skill];
+                const progressBar = document.querySelector(`[data-skill-cognitive="${skill}"] .progress-bar`);
+                const scoreSpan = document.querySelector(`[data-skill-cognitive="${skill}"] .skill-score`);
+                
+                if (progressBar) progressBar.style.width = skillData.progress + '%';
+                if (scoreSpan) scoreSpan.textContent = skillData.score + '/10';
+            });
+
+            // Career skills update
+            Object.keys(appState.careerSkills).forEach(skill => {
+                const skillData = appState.careerSkills[skill];
+                const progressBar = document.querySelector(`[data-skill-career="${skill}"] .progress-bar`);
+                const scoreSpan = document.querySelector(`[data-skill-career="${skill}"] .skill-score`);
+                
+                if (progressBar) progressBar.style.width = skillData.progress + '%';
+                if (scoreSpan) scoreSpan.textContent = skillData.score + '/10';
+            });
+        }
+
+        // ===== CAREER SKILLS =====
+        function startCareerTraining(skillType) {
+            const skill = appState.careerSkills[skillType];
+            if (skill) {
+                const newScore = Math.min(10, skill.score + (Math.random() * 0.6));
+                appState.careerSkills[skillType].score = parseFloat(newScore.toFixed(1));
+                appState.careerSkills[skillType].progress = Math.min(100, skill.progress + 10);
+                
+                addXP(40);
+                showAlert('success', `💼 Práctica completada. Nueva puntuación: ${newScore.toFixed(1)}`);
+                updateSkillsDisplay();
+            }
+        }
+
+        // ===== ADMIN FUNCTIONS =====
+        function addNewUser() {
+            const newId = appState.users.length + 1;
+            const newUser = {
+                id: newId,
+                name: `Usuario ${newId}`,
+                email: `user${newId}@example.com`,
+                role: 'Estudiante',
+                status: true
+            };
+            appState.users.push(newUser);
+            updateAdminUserTable();
+            showAlert('success', '✓ Nuevo usuario agregado');
+        }
+
+        function updateAdminUserTable() {
+            const tbody = document.querySelector('.admin-table tbody');
+            if (!tbody) return;
+
+            tbody.innerHTML = appState.users.map(user => `
+                <tr>
+                    <td>#${String(user.id).padStart(3, '0')}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.role}</td>
+                    <td><span class="badge-icon" style="width: 20px; height: 20px; font-size: 0.8rem; margin: 0;">${user.status ? '✓' : '✕'}</span></td>
+                    <td><button class="btn btn-secondary btn-small" onclick="editUser(${user.id})">Editar</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function editUser(userId) {
+            showAlert('info', `Editando usuario #${userId}`);
+        }
+
+        function addNewCourse() {
+            showAlert('info', '🎓 Modal de nuevo curso');
+        }
+
+        function updateContentTable() {
+            const tbody = document.querySelectorAll('.admin-table tbody')[1];
+            if (!tbody) return;
+
+            tbody.innerHTML = appState.courses.map(course => `
+                <tr>
+                    <td>${course.name}</td>
+                    <td>${course.type}</td>
+                    <td>${course.lessons}</td>
+                    <td>${course.students}</td>
+                    <td>${course.status}</td>
+                    <td><button class="btn btn-secondary btn-small">Editar</button></td>
+                </tr>
+            `).join('');
+        }
+
+        // ===== MODALS =====
+        function toggleModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.toggle('active');
+            }
+        }
+
+        function toggleUserMenu() {
+            toggleModal('parentalModal');
+        }
+
+        // ===== GAMIFICATION =====
+        function addXP(amount) {
+            appState.currentUser.xp += amount;
+            if (appState.currentUser.xp >= appState.currentUser.maxXp) {
+                levelUp();
+            }
+            updateXPDisplay();
+            saveData('userXP', appState.currentUser.xp);
+        }
+
+        function levelUp() {
+            appState.currentUser.level += 1;
+            appState.currentUser.xp = 0;
+            appState.currentUser.maxXp = Math.floor(appState.currentUser.maxXp * 1.1);
+            
+            showAlert('success', `🎉 ¡Felicidades! Subiste al nivel ${appState.currentUser.level}`);
+            saveData('userLevel', appState.currentUser.level);
+        }
+
+        function updateXPDisplay() {
+            const xpPercent = (appState.currentUser.xp / appState.currentUser.maxXp) * 100;
+            const xpProgress = document.getElementById('xpProgress');
+            const userLevel = document.getElementById('userLevel');
+            
+            if (xpProgress) {
+                xpProgress.style.width = xpPercent + '%';
+            }
+            if (userLevel) {
+                userLevel.textContent = appState.currentUser.level;
+            }
+        }
+
+        // ===== ALERTS =====
+        function showAlert(type, message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            alertDiv.setAttribute('role', 'alert');
+            
+            document.body.insertBefore(alertDiv, document.body.firstChild);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // ===== ACCESSIBILITY =====
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal.active').forEach(modal => {
+                    modal.classList.remove('active');
+                });
+            }
+        });
+
+        // ===== INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', () => {
+            updateOfflineBanner();
+            updateXPDisplay();
+            
+            // Load saved data
+            const savedXP = loadData('userXP');
+            if (savedXP) {
+                appState.currentUser.xp = savedXP;
+                updateXPDisplay();
+            }
+
+            // Set up event delegation for dynamic elements
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.badge')) {
+                    showAlert('info', '🏆 Logro desbloqueado');
+                }
+            });
+        });
+
+        // ===== RESPONSIVE MOBILE MENU =====
+        function toggleMobileMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        // ===== SERVICE WORKER (Offline Support) =====
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:text/javascript,\
+                self.addEventListener("install", () => self.skipWaiting());\
+                self.addEventListener("activate", (e) => e.waitUntil(clients.claim()));\
+                self.addEventListener("fetch", (e) => {\
+                    e.respondWith(\
+                        caches.match(e.request).then(r => r || fetch(e.request))\
+                    );\
+                });\
+            ').catch(() => {
+                // Service worker registration failed, app still works in online mode
+            });
+        }
+    </script>
+</body>
+</html>
