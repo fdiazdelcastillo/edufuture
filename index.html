@@ -1,2039 +1,1396 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Plataforma educativa de orientación vocacional temprana con cursos multiidioma">
-    <meta name="theme-color" content="#2180A4">
-    <title>EduVocal - Orientación Vocacional</title>
-    <style>
-        :root {
-            --color-primary: #2180A4;
-            --color-primary-dark: #1a6885;
-            --color-secondary: #32b8c6;
-            --color-success: #27ae60;
-            --color-warning: #f39c12;
-            --color-error: #e74c3c;
-            --color-bg: #f5f5f5;
-            --color-surface: #ffffff;
-            --color-text: #2c3e50;
-            --color-text-light: #7f8c8d;
-            --color-border: #ecf0f1;
-            --space-8: 8px;
-            --space-12: 12px;
-            --space-16: 16px;
-            --space-24: 24px;
-            --space-32: 32px;
-            --radius-base: 8px;
-            --radius-lg: 12px;
-            --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
-            --shadow-md: 0 4px 12px rgba(0,0,0,0.15);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            font-size: 16px;
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--color-bg);
-            color: var(--color-text);
-            line-height: 1.6;
-        }
-
-        /* Accessibility */
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0,0,0,0);
-            white-space: nowrap;
-            border-width: 0;
-        }
-
-        :focus-visible {
-            outline: 2px solid var(--color-primary);
-            outline-offset: 2px;
-        }
-
-        /* Header & Navigation */
-        header {
-            background: var(--color-surface);
-            box-shadow: var(--shadow-sm);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: var(--space-16) var(--space-24);
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--color-primary);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: var(--space-12);
-        }
-
-        .nav-links {
-            display: flex;
-            gap: var(--space-24);
-            list-style: none;
-            align-items: center;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--color-text);
-            font-weight: 500;
-            transition: color 0.3s ease;
-            padding: var(--space-8) var(--space-12);
-            border-radius: var(--radius-base);
-        }
-
-        .nav-links a:hover {
-            color: var(--color-primary);
-            background-color: rgba(33, 128, 164, 0.05);
-        }
-
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: var(--space-16);
-        }
-
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-        }
-
-        /* Main Container */
-        main {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: var(--space-24);
-        }
-
-        /* Sections */
-        section {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        section.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Dashboard */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: var(--space-24);
-            margin-bottom: var(--space-32);
-        }
-
-        .card {
-            background: var(--color-surface);
-            border-radius: var(--radius-lg);
-            padding: var(--space-24);
-            box-shadow: var(--shadow-sm);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .card-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: var(--space-12);
-            color: var(--color-primary);
-        }
-
-        .card-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--color-text);
-            margin-bottom: var(--space-8);
-        }
-
-        .card-progress {
-            width: 100%;
-            height: 8px;
-            background: var(--color-border);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
-            transition: width 0.3s ease;
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: var(--space-16);
-            margin-bottom: var(--space-24);
-            border-bottom: 2px solid var(--color-border);
-            overflow-x: auto;
-        }
-
-        .tab-btn {
-            background: none;
-            border: none;
-            padding: var(--space-12) var(--space-16);
-            font-size: 1rem;
-            font-weight: 500;
-            color: var(--color-text-light);
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-
-        .tab-btn.active {
-            color: var(--color-primary);
-            border-bottom-color: var(--color-primary);
-        }
-
-        .tab-btn:hover {
-            color: var(--color-primary);
-        }
-
-        /* Content Grid */
-        .content-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: var(--space-24);
-        }
-
-        .module-item {
-            background: var(--color-surface);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-            transition: transform 0.3s ease;
-        }
-
-        .module-item:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .module-header {
-            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-            color: white;
-            padding: var(--space-24);
-            text-align: center;
-            min-height: 100px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .module-icon {
-            font-size: 2rem;
-            margin-bottom: var(--space-8);
-        }
-
-        .module-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-        .module-body {
-            padding: var(--space-16);
-        }
-
-        .module-desc {
-            font-size: 0.9rem;
-            color: var(--color-text-light);
-            margin-bottom: var(--space-12);
-        }
-
-        .module-stats {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9rem;
-            margin-bottom: var(--space-12);
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: var(--space-12) var(--space-24);
-            border-radius: var(--radius-base);
-            font-size: 0.95rem;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            gap: var(--space-8);
-        }
-
-        .btn-primary {
-            background: var(--color-primary);
-            color: white;
-            width: 100%;
-        }
-
-        .btn-primary:hover {
-            background: var(--color-primary-dark);
-        }
-
-        .btn-secondary {
-            background: var(--color-border);
-            color: var(--color-text);
-        }
-
-        .btn-secondary:hover {
-            background: #ddd;
-        }
-
-        .btn-small {
-            padding: var(--space-8) var(--space-12);
-            font-size: 0.85rem;
-            width: auto;
-        }
-
-        /* Forms */
-        .form-group {
-            margin-bottom: var(--space-24);
-        }
-
-        label {
-            display: block;
-            margin-bottom: var(--space-8);
-            font-weight: 500;
-            color: var(--color-text);
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: var(--space-12);
-            border: 2px solid var(--color-border);
-            border-radius: var(--radius-base);
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--color-primary);
-            box-shadow: 0 0 0 3px rgba(33, 128, 164, 0.1);
-        }
-
-        /* Gamification */
-        .achievements {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-            gap: var(--space-16);
-            margin: var(--space-24) 0;
-        }
-
-        .badge {
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-
-        .badge:hover {
-            transform: scale(1.1);
-        }
-
-        .badge-icon {
-            width: 70px;
-            height: 70px;
-            margin: 0 auto var(--space-8);
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            color: white;
-        }
-
-        .badge-name {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--color-text);
-        }
-
-        /* Level & XP */
-        .level-display {
-            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-            color: white;
-            padding: var(--space-24);
-            border-radius: var(--radius-lg);
-            text-align: center;
-            margin-bottom: var(--space-24);
-        }
-
-        .level-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-        }
-
-        .xp-bar {
-            width: 100%;
-            height: 12px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 6px;
-            margin-top: var(--space-16);
-            overflow: hidden;
-        }
-
-        .xp-progress {
-            height: 100%;
-            background: rgba(255,255,255,0.8);
-            transition: width 0.3s ease;
-        }
-
-        /* Admin Panel */
-        .admin-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: var(--color-surface);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .admin-table th {
-            background: var(--color-primary);
-            color: white;
-            padding: var(--space-16);
-            text-align: left;
-            font-weight: 600;
-        }
-
-        .admin-table td {
-            padding: var(--space-16);
-            border-bottom: 1px solid var(--color-border);
-        }
-
-        .admin-table tr:hover {
-            background: var(--color-bg);
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--color-surface);
-            border-radius: var(--radius-lg);
-            padding: var(--space-32);
-            max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: var(--space-16);
-            right: var(--space-16);
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--color-text-light);
-        }
-
-        /* Alerts */
-        .alert {
-            padding: var(--space-16);
-            border-radius: var(--radius-base);
-            margin-bottom: var(--space-16);
-            display: flex;
-            gap: var(--space-12);
-            align-items: center;
-        }
-
-        .alert-success {
-            background: rgba(39, 174, 96, 0.1);
-            border-left: 4px solid var(--color-success);
-            color: var(--color-success);
-        }
-
-        .alert-error {
-            background: rgba(231, 76, 60, 0.1);
-            border-left: 4px solid var(--color-error);
-            color: var(--color-error);
-        }
-
-        .alert-warning {
-            background: rgba(243, 156, 18, 0.1);
-            border-left: 4px solid var(--color-warning);
-            color: var(--color-warning);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            nav {
-                flex-direction: column;
-                gap: var(--space-16);
-            }
-
-            .nav-links {
-                flex-wrap: wrap;
-                gap: var(--space-12);
-                justify-content: center;
-            }
-
-            .tabs {
-                flex-wrap: nowrap;
-            }
-
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .content-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            }
-
-            .modal-content {
-                padding: var(--space-24);
-            }
-        }
-
-        /* Dark mode support */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --color-bg: #1a1a1a;
-                --color-surface: #2d2d2d;
-                --color-text: #e0e0e0;
-                --color-text-light: #a0a0a0;
-                --color-border: #3d3d3d;
-            }
-        }
-
-        /* Offline indicator */
-        .offline-banner {
-            display: none;
-            background: var(--color-warning);
-            color: white;
-            padding: var(--space-12) var(--space-24);
-            text-align: center;
-            font-weight: 500;
-        }
-
-        .offline-banner.active {
-            display: block;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduVocal - Sistema de Gestión Educativa</title>
 </head>
 <body>
-    <!-- Offline Banner -->
-    <div class="offline-banner" id="offlineBanner">
-        <span aria-live="polite">⚠️ Modo sin conexión - Cambios se sincronizarán cuando recupere conexión</span>
-    </div>
-
-    <!-- Login Modal -->
-    <div class="modal active" id="loginModal">
-        <div class="modal-content" style="max-width: 400px;">
-            <h2 style="text-align: center; margin-bottom: 24px;">🎓 EduVocal - Acceso</h2>
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="loginEmail" placeholder="ejemplo@email.com" value="admin@eduvocal.com">
-            </div>
-            <div class="form-group">
-                <label>Contraseña</label>
-                <input type="password" id="loginPassword" placeholder="••••••••" value="admin123">
-            </div>
-            <button class="btn btn-primary" onclick="handleLogin()" style="margin-bottom: 12px;">Iniciar Sesión</button>
-            <div style="background: #ecf0f1; padding: 12px; border-radius: 8px; font-size: 0.85rem; color: #7f8c8d;">
-                <strong>Usuarios demo:</strong><br>
-                📧 admin@eduvocal.com / admin123 (Super Admin)<br>
-                📧 juan@example.com / user123 (Estudiante)<br>
-                📧 laura@example.com / instructor123 (Instructor)
-            </div>
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>EduVocal</h2>
+        <p class="modal-subtitle">Sistema de Gestión Educativa</p>
+      </div>
+      <div class="modal-body">
+        <form id="loginForm">
+          <div class="form-group">
+            <label class="form-label" for="email">Correo Electrónico</label>
+            <input type="email" id="email" class="form-control" required placeholder="ejemplo@correo.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="password">Contraseña</label>
+            <input type="password" id="password" class="form-control" required placeholder="••••••••">
+          </div>
+          <div id="loginError" class="error-message" style="display: none;"></div>
+          <button type="submit" class="btn btn--primary btn--full-width">Iniciar Sesión</button>
+        </form>
+        <div class="demo-users">
+          <p class="demo-title">Usuarios Demo:</p>
+          <div class="demo-list">
+            <div class="demo-item">admin@eduvocal.com / admin123</div>
+            <div class="demo-item">juan@example.com / user123</div>
+            <div class="demo-item">maria@example.com / user456</div>
+            <div class="demo-item">carlos@example.com / parent123</div>
+            <div class="demo-item">laura@example.com / instructor123</div>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Header -->
-    <header role="banner">
-        <nav role="navigation" aria-label="Principal">
-            <a href="#" class="logo" onclick="switchSection('dashboard')">
-                <span>🎓</span> EduVocal
-            </a>
-            <ul class="nav-links">
-                <li><a href="#" onclick="switchSection('dashboard')">Inicio</a></li>
-                <li><a href="#" onclick="switchSection('vocational')">Orientación</a></li>
-                <li><a href="#" onclick="switchSection('languages')">Idiomas</a></li>
-                <li><a href="#" onclick="switchSection('skills')">Habilidades</a></li>
-                <li><a href="#" onclick="switchSection('progress')">Progreso</a></li>
-                <li id="adminNav" style="display: none;"><a href="#" onclick="switchSection('admin')">Admin</a></li>
+  <!-- Main Application -->
+  <div id="mainApp" style="display: none;">
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+      <div class="navbar-brand">
+        <h1>EduVocal</h1>
+      </div>
+      <div class="navbar-menu">
+        <a href="#" class="nav-link active" data-section="dashboard">Dashboard</a>
+        <a href="#" class="nav-link" data-section="vocational">Vocacional</a>
+        <a href="#" class="nav-link" data-section="languages">Idiomas</a>
+        <a href="#" class="nav-link" data-section="skills">Habilidades</a>
+        <a href="#" class="nav-link" data-section="progress">Progreso</a>
+        <a href="#" class="nav-link admin-only" data-section="admin" style="display: none;">Admin</a>
+      </div>
+      <div class="navbar-user">
+        <div class="user-avatar" id="userAvatar"></div>
+        <button class="btn btn--outline btn--sm" id="logoutBtn">Salir</button>
+      </div>
+    </nav>
+
+    <!-- Dashboard Section -->
+    <section id="dashboard" class="content-section active">
+      <div class="container">
+        <h2>Dashboard</h2>
+        <div class="welcome-card card">
+          <div class="card__body">
+            <h3 id="welcomeMessage">Bienvenido</h3>
+            <p id="userRole"></p>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card card">
+            <div class="card__body">
+              <h4>Cursos Activos</h4>
+              <p class="stat-number">5</p>
+            </div>
+          </div>
+          <div class="stat-card card">
+            <div class="card__body">
+              <h4>Progreso General</h4>
+              <p class="stat-number">78%</p>
+            </div>
+          </div>
+          <div class="stat-card card">
+            <div class="card__body">
+              <h4>Certificaciones</h4>
+              <p class="stat-number">3</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Vocational Section -->
+    <section id="vocational" class="content-section">
+      <div class="container">
+        <h2>Orientación Vocacional</h2>
+        <div class="card">
+          <div class="card__body">
+            <h3>Test de Aptitudes</h3>
+            <p>Descubre tus fortalezas y áreas de interés profesional.</p>
+            <button class="btn btn--primary">Iniciar Test</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card__body">
+            <h3>Carreras Recomendadas</h3>
+            <ul class="career-list">
+              <li>Ingeniería de Software</li>
+              <li>Diseño Gráfico</li>
+              <li>Administración de Empresas</li>
             </ul>
-            <div class="user-menu">
-                <button class="avatar" onclick="toggleUserMenu()" title="Menú de usuario">JD</button>
-                <button class="btn btn-secondary btn-small" onclick="logoutUser()" style="margin-left: 8px;">Salir</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Languages Section -->
+    <section id="languages" class="content-section">
+      <div class="container">
+        <h2>Cursos de Idiomas</h2>
+        <div class="courses-grid">
+          <div class="card">
+            <div class="card__body">
+              <h3>Inglés</h3>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 65%;"></div>
+              </div>
+              <p>Nivel Intermedio - 65%</p>
             </div>
-        </nav>
-    </header>
-
-    <!-- Main Content -->
-    <main role="main">
-        <!-- Dashboard Section -->
-        <section id="dashboard" class="active">
-            <h1>Bienvenido a EduVocal</h1>
-            <p style="color: var(--color-text-light); margin-bottom: var(--space-24);">Tu plataforma de orientación vocacional y desarrollo de habilidades</p>
-
-            <div class="level-display">
-                <div class="level-number" id="userLevel">1</div>
-                <p>Nivel actual</p>
-                <div class="xp-bar">
-                    <div class="xp-progress" id="xpProgress" style="width: 25%"></div>
-                </div>
-                <p style="margin-top: var(--space-12); font-size: 0.9rem;">250 / 1000 XP</p>
+          </div>
+          <div class="card">
+            <div class="card__body">
+              <h3>Francés</h3>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 40%;"></div>
+              </div>
+              <p>Nivel Básico - 40%</p>
             </div>
-
-            <h2 style="margin-bottom: var(--space-16);">Tu Progreso</h2>
-            <div class="dashboard-grid">
-                <div class="card">
-                    <div class="card-title">Cursos Completados</div>
-                    <div class="card-value">3</div>
-                    <div class="card-progress">
-                        <div class="progress-bar" style="width: 30%"></div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-title">Habilidades Desarrolladas</div>
-                    <div class="card-value">7</div>
-                    <div class="card-progress">
-                        <div class="progress-bar" style="width: 70%"></div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-title">Logros Desbloqueados</div>
-                    <div class="card-value">5</div>
-                    <div class="card-progress">
-                        <div class="progress-bar" style="width: 50%"></div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-title">Racha de Aprendizaje</div>
-                    <div class="card-value">12</div>
-                    <p style="color: var(--color-text-light); font-size: 0.9rem;">días consecutivos</p>
-                </div>
+          </div>
+          <div class="card">
+            <div class="card__body">
+              <h3>Alemán</h3>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 25%;"></div>
+              </div>
+              <p>Nivel Básico - 25%</p>
             </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-            <h2 style="margin: var(--space-32) 0 var(--space-16);">Logros Recientes</h2>
-            <div class="achievements">
-                <div class="badge">
-                    <div class="badge-icon">🏆</div>
-                    <div class="badge-name">Primer paso</div>
-                </div>
-                <div class="badge">
-                    <div class="badge-icon">🎓</div>
-                    <div class="badge-name">Aprendiz</div>
-                </div>
-                <div class="badge">
-                    <div class="badge-icon">⭐</div>
-                    <div class="badge-name">5 Estrellas</div>
-                </div>
-                <div class="badge">
-                    <div class="badge-icon">🚀</div>
-                    <div class="badge-name">Ascenso Rápido</div>
-                </div>
-                <div class="badge">
-                    <div class="badge-icon">🌍</div>
-                    <div class="badge-name">Políglota</div>
-                </div>
+    <!-- Skills Section -->
+    <section id="skills" class="content-section">
+      <div class="container">
+        <h2>Desarrollo de Habilidades</h2>
+        <div class="skills-grid">
+          <div class="card">
+            <div class="card__body">
+              <h3>Comunicación</h3>
+              <span class="status status--success">Avanzado</span>
             </div>
-        </section>
-
-        <!-- Vocational Guidance Section -->
-        <section id="vocational">
-            <h1>Orientación Vocacional Temprana</h1>
-            <p style="color: var(--color-text-light); margin-bottom: var(--space-24);">Descubre tu vocación a través de pruebas personalizadas y orientación profesional</p>
-
-            <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('vocational', 'assessment')">Evaluación</button>
-                <button class="tab-btn" onclick="switchTab('vocational', 'results')">Mis Resultados</button>
-                <button class="tab-btn" onclick="switchTab('vocational', 'careers')">Carreras Recomendadas</button>
+          </div>
+          <div class="card">
+            <div class="card__body">
+              <h3>Trabajo en Equipo</h3>
+              <span class="status status--info">Intermedio</span>
             </div>
-
-            <div id="vocational-assessment" class="tab-content">
-                <div class="card">
-                    <h2>Test de Habilidades Vocacionales</h2>
-                    <p style="color: var(--color-text-light); margin-bottom: var(--space-24);">Responde estas preguntas para identificar tus fortalezas y preferencias profesionales</p>
-                    
-                    <div class="form-group">
-                        <label>¿Cuál es tu área de interés principal?</label>
-                        <select>
-                            <option>-- Selecciona una opción --</option>
-                            <option>Tecnología e Informática</option>
-                            <option>Salud y Medicina</option>
-                            <option>Artes y Diseño</option>
-                            <option>Negocios y Administración</option>
-                            <option>Educación</option>
-                            <option>Ingeniería</option>
-                            <option>Ciencias Sociales</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>¿Prefieres trabajar en equipo o de forma independiente?</label>
-                        <select>
-                            <option>-- Selecciona una opción --</option>
-                            <option>Trabajo en equipo</option>
-                            <option>Independiente</option>
-                            <option>Ambos</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>¿Tu fortaleza principal es? (1-5 puntos)</label>
-                        <input type="range" min="1" max="5" value="3" style="width: 100%;">
-                        <small style="color: var(--color-text-light);">1=Creatividad, 5=Análisis</small>
-                    </div>
-
-                    <button class="btn btn-primary" onclick="submitVocationalAssessment()">Enviar Evaluación</button>
-                </div>
+          </div>
+          <div class="card">
+            <div class="card__body">
+              <h3>Liderazgo</h3>
+              <span class="status status--warning">Básico</span>
             </div>
-
-            <div id="vocational-results" class="tab-content" style="display: none;">
-                <div class="card">
-                    <h2>Tus Resultados Vocacionales</h2>
-                    <p style="color: var(--color-text-light); margin-bottom: var(--space-24);">Basado en tu evaluación, aquí están tus perfiles</p>
-                    
-                    <div style="margin-bottom: var(--space-24);">
-                        <h3 style="margin-bottom: var(--space-8);">Perfil Tecnológico: 85%</h3>
-                        <div class="card-progress">
-                            <div class="progress-bar" style="width: 85%"></div>
-                        </div>
-                        <p style="color: var(--color-text-light); font-size: 0.9rem; margin-top: var(--space-8);">Fortaleza en resolución de problemas y pensamiento lógico</p>
-                    </div>
-
-                    <div style="margin-bottom: var(--space-24);">
-                        <h3 style="margin-bottom: var(--space-8);">Perfil Creativo: 72%</h3>
-                        <div class="card-progress">
-                            <div class="progress-bar" style="width: 72%"></div>
-                        </div>
-                        <p style="color: var(--color-text-light); font-size: 0.9rem; margin-top: var(--space-8);">Excelente capacidad para innovar y pensar diferente</p>
-                    </div>
-
-                    <div style="margin-bottom: var(--space-24);">
-                        <h3 style="margin-bottom: var(--space-8);">Perfil Administrativo: 61%</h3>
-                        <div class="card-progress">
-                            <div class="progress-bar" style="width: 61%"></div>
-                        </div>
-                        <p style="color: var(--color-text-light); font-size: 0.9rem; margin-top: var(--space-8);">Buena organización y capacidad de gestión</p>
-                    </div>
-                </div>
+          </div>
+          <div class="card">
+            <div class="card__body">
+              <h3>Pensamiento Crítico</h3>
+              <span class="status status--success">Avanzado</span>
             </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-            <div id="vocational-careers" class="tab-content" style="display: none;">
-                <div class="content-grid">
-                    <div class="module-item">
-                        <div class="module-header">
-                            <div class="module-icon">💻</div>
-                            <div class="module-title">Desarrollador de Software</div>
-                        </div>
-                        <div class="module-body">
-                            <p class="module-desc">Coincidencia: 92%</p>
-                            <button class="btn btn-primary btn-small">Ver más</button>
-                        </div>
-                    </div>
+    <!-- Progress Section -->
+    <section id="progress" class="content-section">
+      <div class="container">
+        <h2>Seguimiento de Progreso</h2>
+        <div class="card">
+          <div class="card__body">
+            <h3>Actividad Reciente</h3>
+            <ul class="activity-list">
+              <li>Completado: Módulo 3 de Inglés</li>
+              <li>Nuevo certificado: Comunicación Efectiva</li>
+              <li>Test vocacional actualizado</li>
+              <li>Nivel alcanzado: Intermedio en Francés</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
 
-                    <div class="module-item">
-                        <div class="module-header">
-                            <div class="module-icon">🎨</div>
-                            <div class="module-title">Diseñador UX/UI</div>
-                        </div>
-                        <div class="module-body">
-                            <p class="module-desc">Coincidencia: 88%</p>
-                            <button class="btn btn-primary btn-small">Ver más</button>
-                        </div>
-                    </div>
+    <!-- Admin Section -->
+    <section id="admin" class="content-section">
+      <div class="container">
+        <h2>Panel de Administración</h2>
+        
+        <!-- Admin Tabs -->
+        <div class="admin-tabs">
+          <button class="admin-tab active" data-tab="users">Usuarios</button>
+          <button class="admin-tab" data-tab="settings">Configuración</button>
+        </div>
 
-                    <div class="module-item">
-                        <div class="module-header">
-                            <div class="module-icon">📊</div>
-                            <div class="module-title">Analista de Datos</div>
-                        </div>
-                        <div class="module-body">
-                            <p class="module-desc">Coincidencia: 85%</p>
-                            <button class="btn btn-primary btn-small">Ver más</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Languages Section -->
-        <section id="languages">
-            <h1>Cursos de Idiomas</h1>
-            <p style="color: var(--color-text-light); margin-bottom: var(--space-24);">Aprende nuevos idiomas con lecciones interactivas</p>
-
-            <div class="content-grid">
-                <div class="module-item">
-                    <div class="module-header" style="background: linear-gradient(135deg, #FF6B6B, #FF8E8E);">
-                        <div class="module-icon">🇬🇧</div>
-                        <div class="module-title">[translate:English]</div>
-                    </div>
-                    <div class="module-body">
-                        <p class="module-desc">Domina el idioma más hablado</p>
-                        <div class="module-stats">
-                            <span>9/12 lecciones</span>
-                            <span>Nivel: Intermedio</span>
-                        </div>
-                        <div class="card-progress" style="margin-bottom: var(--space-12); height: 6px;">
-                            <div class="progress-bar" style="width: 75%"></div>
-                        </div>
-                        <button class="btn btn-primary btn-small" onclick="loadCourseContent('english')">Continuar</button>
-                    </div>
-                </div>
-
-                <div class="module-item">
-                    <div class="module-header" style="background: linear-gradient(135deg, #4ECDC4, #6FE3DD);">
-                        <div class="module-icon">🇨🇳</div>
-                        <div class="module-title">[translate:普通话]</div>
-                    </div>
-                    <div class="module-body">
-                        <p class="module-desc">Aprende [translate:mandarín], la lengua del futuro</p>
-                        <div class="module-stats">
-                            <span>6/18 lecciones</span>
-                            <span>Nivel: Básico</span>
-                        </div>
-                        <div class="card-progress" style="margin-bottom: var(--space-12); height: 6px;">
-                            <div class="progress-bar" style="width: 33%"></div>
-                        </div>
-                        <button class="btn btn-primary btn-small" onclick="loadCourseContent('mandarin')">Continuar</button>
-                    </div>
-                </div>
-
-                <div class="module-item">
-                    <div class="module-header" style="background: linear-gradient(135deg, #FFB347, #FFDAB9);">
-                        <div class="module-icon">🇫🇷</div>
-                        <div class="module-title">[translate:Français]</div>
-                    </div>
-                    <div class="module-body">
-                        <p class="module-desc">Explora la elegancia del idioma francés</p>
-                        <div class="module-stats">
-                            <span>8/15 lecciones</span>
-                            <span>Nivel: Intermedio</span>
-                        </div>
-                        <div class="card-progress" style="margin-bottom: var(--space-12); height: 6px;">
-                            <div class="progress-bar" style="width: 53%"></div>
-                        </div>
-                        <button class="btn btn-primary btn-small" onclick="loadCourseContent('french')">Continuar</button>
-                    </div>
-                </div>
-
-                <div class="module-item">
-                    <div class="module-header" style="background: linear-gradient(135deg, #A8E6CF, #C8F7DC);">
-                        <div class="module-icon">🇵🇹</div>
-                        <div class="module-title">[translate:Português]</div>
-                    </div>
-                    <div class="module-body">
-                        <p class="module-desc">Conéctate con hablantes de portugués</p>
-                        <div class="module-stats">
-                            <span>11/14 lecciones</span>
-                            <span>Nivel: Avanzado</span>
-                        </div>
-                        <div class="card-progress" style="margin-bottom: var(--space-12); height: 6px;">
-                            <div class="progress-bar" style="width: 79%"></div>
-                        </div>
-                        <button class="btn btn-primary btn-small" onclick="loadCourseContent('portuguese')">Continuar</button>
-                    </div>
-                </div>
-
-                <div class="module-item">
-                    <div class="module-header" style="background: linear-gradient(135deg, #FFD93D, #FFE66D);">
-                        <div class="module-icon">🇪🇸</div>
-                        <div class="module-title">[translate:Español]</div>
-                    </div>
-                    <div class="module-body">
-                        <p class="module-desc">Perfecciona tu [translate:español] nativo</p>
-                        <div class="module-stats">
-                            <span>✓ 10/10 lecciones</span>
-                            <span>Nivel: Experto</span>
-                        </div>
-                        <div class="card-progress" style="margin-bottom: var(--space-12); height: 6px;">
-                            <div class="progress-bar" style="width: 100%"></div>
-                        </div>
-                        <button class="btn btn-primary btn-small" onclick="loadCourseContent('spanish')">Revisar</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Skills Section -->
-        <section id="skills">
-            <h1>Desarrollo de Habilidades</h1>
-            <p style="color: var(--color-text-light); margin-bottom: var(--space-24);">Entrena habilidades cognitivas y profesionales</p>
-
-            <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('skills', 'cognitive')">Cognitivas</button>
-                <button class="tab-btn" onclick="switchTab('skills', 'career')">Profesionales</button>
-            </div>
-
-            <div id="skills-cognitive" class="tab-content">
-                <div class="content-grid">
-                    <div class="module-item" data-skill-cognitive="memory">
-                        <div class="module-header" style="background: linear-gradient(135deg, #667eea, #764ba2);">
-                            <div class="module-icon">🧠</div>
-                            <div class="module-title">Memoria</div>
-                        </div>
-                        <div class="module-body">
-                            <p class="module-desc">Mejora tu capacidad de retención</p>
-                            <div class="module-stats">
-                                <span>Progreso: 45% | <span class="skill-score">7.8</span>/10</span>
-                            </div>
-                            <div class="card-progress" style="margin-bottom: var(--space-12); height: 6px;">
-                                <div class="progress-bar" style="width: 45%"></div>
-                            </div>
-                            <button class="btn btn-primary btn-small" onclick="startCognitiveTraining('memory')">Entrenar</button>
-                        </div>
-                    </div>
-
-                    <div class="module-item" data-skill-cognitive="speed">
-                        <div class="module-header" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
-                            <div class="module-icon">⚡</div>
-                            <div class="module-title">Velocidad Mental</div>
-                        </div>
-                        <div class="module-body">
-                            <p class="module-desc">Agilidad en la resolución de problemas</p>
-                            <div class="module-stats">
-                                <span>Progreso: 62% | <span class="skill-score">8.4</span>/10</span>
-                            </div>
-                            <div class="card-progress" style="margin-bottom: var(--space-12); height: 6px;">
-                                <div class="progress-bar" style="width: 62%"></div>
-                            </div>
-                            <button class="btn btn-primary btn-small" onclick="startCognitiveTraining('speed')">Entrenar</button>
-                        </div>
-                    </div>
-
-                    <div class="module-item" data-skill-cognitive="focus">
-                        <div class="module-header" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
-                            <div class="module-icon">🔍</div>
-                            <div class="module-title">Concentración</div>
-                        </div>
-                        <div class="module-body">
-                            <p class="module-desc">Entrena tu enfoque y atención</p>
-                            <div class="module-stats">
-                                <span>Progreso: 38% | <span class="skill-score">7.2</span>/10</span>
-                            </div>
-                            <div class="card-progress" style="margin-bottom: var(--space-12); height: 6px;">
-                                <div class="progress-bar" style="width: 38%"></div>
-                            </div>
-                            <button class="btn btn-primary btn-small" onclick="startCognitiveTraining('focus')">Entrenar</button>
-                        </div>
-                    </div>
-
-                    <div class="module-item" data-skill-cognitive="logic">
-                        <div class="module-header" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
-                            <div class="module-icon">🎯</div>
-                            <div class="module-title">Lógica</div>
-                        </div>
-                        <div class="module-body">
-                            <p class="module-desc">Desarrolla pensamiento analítico</p>
-                            <div class="module-stats">
-                                <span>Progreso: 55% | <span class="skill-score">8.1</span>/10</span>
-                            </div>
-                            <div class="card-progress" style="margin-bottom: var(--space-12); height: 6px;">
-                                <div class="progress-bar" style="width: 55%"></div>
-                            </div>
-                            <button class="btn btn-primary btn-small" onclick="startCognitiveTraining('logic')">Entrenar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="skills-career" class="tab-content" style="display: none;">
-                <div class="content-grid">
-                    <div class="module-item" data-skill-career="communication">
-                        <div class="module-header" style="background: linear-gradient(135deg, #fa709a, #fee140);">
-                            <div class="module-icon">💬</div>
-                            <div class="module-title">Comunicación</div>
-                        </div>
-                        <div class="module-body">
-                            <p class="module-desc">Mejora tu expresión y presentación</p>
-                            <div class="module-stats">
-                                <span>Progreso: 70% | <span class="skill-score">8.9</span>/10</span>
-                            </div>
-                            <div class="card-progress" style="margin-bottom: var(--space-12); height: 6px;">
-                                <div class="progress-bar" style="width: 70%"></div>
-                            </div>
-                            <button class="btn btn-primary btn-small" onclick="startCareerTraining('communication')">Practicar</button>
-                        </div>
-                    </div>
-
-                    <div class="module-item" data-skill-career="teamwork">
-                        <div class="module-header" style="background: linear-gradient(135deg, #a8edea, #fed6e3);">
-                            <div class="module-icon">🤝</div>
-                            <div class="module-title">Trabajo en Equipo</div>
-                        </div>
-                        <div class="module-body">
-                            <p class="module-desc">Desarrolla colaboración efectiva</p>
-                            <div class="module-stats">
-                                <span>Progreso: 58% | <span class="skill-score">8.2</span>/10</span>
-                            </div>
-                            <div class="card-progress" style="margin-bottom: var(--space-12); height: 6px;">
-                                <div class="progress-bar" style="width: 58%"></div>
-                            </div>
-                            <button class="btn btn-primary btn-small" onclick="startCareerTraining('teamwork')">Practicar</button>
-                        </div>
-                    </div>
-
-                    <div class="module-item" data-skill-career="leadership">
-                        <div class="module-header" style="background: linear-gradient(135deg, #ff9a56, #ff6a88);">
-                            <div class="module-icon">🚀</div>
-                            <div class="module-title">Liderazgo</div>
-                        </div>
-                        <div class="module-body">
-                            <p class="module-desc">Cultiva habilidades de dirección</p>
-                            <div class="module-stats">
-                                <span>Progreso: 42% | <span class="skill-score">7.6</span>/10</span>
-                            </div>
-                            <div class="card-progress" style="margin-bottom: var(--space-12); height: 6px;">
-                                <div class="progress-bar" style="width: 42%"></div>
-                            </div>
-                            <button class="btn btn-primary btn-small" onclick="startCareerTraining('leadership')">Practicar</button>
-                        </div>
-                    </div>
-
-                    <div class="module-item" data-skill-career="projectManagement">
-                        <div class="module-header" style="background: linear-gradient(135deg, #667eea, #764ba2);">
-                            <div class="module-icon">📊</div>
-                            <div class="module-title">Gestión de Proyectos</div>
-                        </div>
-                        <div class="module-body">
-                            <p class="module-desc">Planificación y organización</p>
-                            <div class="module-stats">
-                                <span>Progreso: 51% | <span class="skill-score">8.0</span>/10</span>
-                            </div>
-                            <div class="card-progress" style="margin-bottom: var(--space-12); height: 6px;">
-                                <div class="progress-bar" style="width: 51%"></div>
-                            </div>
-                            <button class="btn btn-primary btn-small" onclick="startCareerTraining('projectManagement')">Practicar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Progress Section -->
-        <section id="progress">
-            <h1>Evaluación y Seguimiento</h1>
-            <p style="color: var(--color-text-light); margin-bottom: var(--space-24);">Visualiza tu evolución académica</p>
-
-            <div class="card" style="margin-bottom: var(--space-24);">
-                <h2>Desempeño General</h2>
-                <div style="margin-top: var(--space-24);">
-                    <h3 style="margin-bottom: var(--space-8);">Promedio de Calificaciones: 8.5/10</h3>
-                    <div class="card-progress">
-                        <div class="progress-bar" style="width: 85%"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card" style="margin-bottom: var(--space-24);">
-                <h2>Evolución por Módulo</h2>
-                <table class="admin-table" style="margin-top: var(--space-16);">
-                    <thead>
-                        <tr>
-                            <th>Módulo</th>
-                            <th>Calificación</th>
-                            <th>Progreso</th>
-                            <th>Tendencia</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Orientación Vocacional</td>
-                            <td>9.2</td>
-                            <td>
-                                <div class="card-progress" style="width: 150px; height: 6px;">
-                                    <div class="progress-bar" style="width: 92%"></div>
-                                </div>
-                            </td>
-                            <td>📈 Mejorando</td>
-                        </tr>
-                        <tr>
-                            <td>Idiomas</td>
-                            <td>8.1</td>
-                            <td>
-                                <div class="card-progress" style="width: 150px; height: 6px;">
-                                    <div class="progress-bar" style="width: 81%"></div>
-                                </div>
-                            </td>
-                            <td>➡️ Estable</td>
-                        </tr>
-                        <tr>
-                            <td>Habilidades Cognitivas</td>
-                            <td>7.8</td>
-                            <td>
-                                <div class="card-progress" style="width: 150px; height: 6px;">
-                                    <div class="progress-bar" style="width: 78%"></div>
-                                </div>
-                            </td>
-                            <td>📉 A mejorar</td>
-                        </tr>
-                        <tr>
-                            <td>Habilidades Profesionales</td>
-                            <td>8.7</td>
-                            <td>
-                                <div class="card-progress" style="width: 150px; height: 6px;">
-                                    <div class="progress-bar" style="width: 87%"></div>
-                                </div>
-                            </td>
-                            <td>📈 Mejorando</td>
-                        </tr>
-                    </tbody>
+        <!-- Users Tab -->
+        <div id="usersTab" class="admin-tab-content active">
+          <div class="admin-actions">
+            <button class="btn btn--primary" id="addUserBtn">Agregar Usuario</button>
+          </div>
+          <div class="card">
+            <div class="card__body">
+              <h3>Gestión de Usuarios</h3>
+              <div class="users-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Email</th>
+                      <th>Rol</th>
+                      <th>Estado</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="usersTableBody">
+                  </tbody>
                 </table>
+              </div>
             </div>
-
-            <div class="card">
-                <h2>Análisis Detallado</h2>
-                <div style="margin-top: var(--space-24);">
-                    <h3 style="margin-bottom: var(--space-8); color: var(--color-success);">✓ Fortalezas</h3>
-                    <ul style="margin-bottom: var(--space-24);">
-                        <li>Excelente comprensión de conceptos vocacionales</li>
-                        <li>Dedicación constante al aprendizaje</li>
-                        <li>Participación activa en ejercicios de habilidades</li>
-                    </ul>
-
-                    <h3 style="margin-bottom: var(--space-8); color: var(--color-warning);">⚠ Áreas de Mejora</h3>
-                    <ul>
-                        <li>Enfoque en habilidades cognitivas avanzadas</li>
-                        <li>Consistencia en lecciones de idiomas</li>
-                        <li>Práctica de comunicación en vivo</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <!-- Admin Section -->
-        <section id="admin">
-            <h1>Panel Administrativo</h1>
-            <p style="color: var(--color-text-light); margin-bottom: var(--space-24);">Gestiona usuarios, contenido y reportes</p>
-
-            <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('admin', 'users')">Usuarios</button>
-                <button class="tab-btn" onclick="switchTab('admin', 'content')">Contenido</button>
-                <button class="tab-btn" onclick="switchTab('admin', 'reports')">Reportes</button>
-                <button class="tab-btn" onclick="switchTab('admin', 'settings')">Configuración</button>
-            </div>
-
-            <div id="admin-users" class="tab-content">
-                <div class="card">
-                    <h2>Gestión de Usuarios</h2>
-                    <button class="btn btn-primary" style="margin-bottom: var(--space-24);" onclick="addNewUser()">+ Nuevo Usuario</button>
-
-                    <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nombre</th>
-                                <th>Email</th>
-                                <th>Rol</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>#001</td>
-                                <td>Juan Díaz</td>
-                                <td>juan@example.com</td>
-                                <td>Estudiante</td>
-                                <td><span class="badge-icon" style="width: 20px; height: 20px; font-size: 0.8rem; margin: 0;">✓</span></td>
-                                <td>
-                                    <button class="btn btn-secondary btn-small" onclick="editUser(1)">Editar</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#002</td>
-                                <td>María García</td>
-                                <td>maria@example.com</td>
-                                <td>Estudiante</td>
-                                <td><span class="badge-icon" style="width: 20px; height: 20px; font-size: 0.8rem; margin: 0;">✓</span></td>
-                                <td>
-                                    <button class="btn btn-secondary btn-small" onclick="editUser(2)">Editar</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#003</td>
-                                <td>Carlos López</td>
-                                <td>carlos@example.com</td>
-                                <td>Tutor Parental</td>
-                                <td><span class="badge-icon" style="width: 20px; height: 20px; font-size: 0.8rem; margin: 0;">✓</span></td>
-                                <td>
-                                    <button class="btn btn-secondary btn-small" onclick="editUser(3)">Editar</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="admin-content" class="tab-content" style="display: none;">
-                <div class="card">
-                    <h2>Gestión de Contenido</h2>
-                    <button class="btn btn-primary" style="margin-bottom: var(--space-24);" onclick="addNewCourse()">+ Nuevo Curso</button>
-
-                    <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Tipo</th>
-                                <th>Lecciones</th>
-                                <th>Estudiantes</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Inglés Básico</td>
-                                <td>Idioma</td>
-                                <td>12</td>
-                                <td>234</td>
-                                <td>Activo</td>
-                                <td><button class="btn btn-secondary btn-small">Editar</button></td>
-                            </tr>
-                            <tr>
-                                <td>Habilidades Cognitivas</td>
-                                <td>Habilidades</td>
-                                <td>8</td>
-                                <td>156</td>
-                                <td>Activo</td>
-                                <td><button class="btn btn-secondary btn-small">Editar</button></td>
-                            </tr>
-                            <tr>
-                                <td>Orientación Vocacional</td>
-                                <td>Orientación</td>
-                                <td>6</td>
-                                <td>189</td>
-                                <td>Activo</td>
-                                <td><button class="btn btn-secondary btn-small">Editar</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="admin-reports" class="tab-content" style="display: none;">
-                <div class="card">
-                    <h2>Reportes de Actividad</h2>
-                    <div style="margin-top: var(--space-24);">
-                        <div style="margin-bottom: var(--space-24);">
-                            <h3 style="margin-bottom: var(--space-8);">Usuarios Activos (últimos 30 días)</h3>
-                            <div class="card-value">1,247</div>
-                            <p style="color: var(--color-success); font-weight: 500;">↑ 12.5% vs mes anterior</p>
-                        </div>
-
-                        <div style="margin-bottom: var(--space-24);">
-                            <h3 style="margin-bottom: var(--space-8);">Horas de Aprendizaje Totales</h3>
-                            <div class="card-value">3,542</div>
-                            <p style="color: var(--color-success); font-weight: 500;">↑ 8.2% vs mes anterior</p>
-                        </div>
-
-                        <div>
-                            <h3 style="margin-bottom: var(--space-8);">Tasa de Finalización de Cursos</h3>
-                            <div class="card-value">78%</div>
-                            <p style="color: var(--color-text-light);">Excelente desempeño</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="admin-settings" class="tab-content" style="display: none;">
-                <div class="card">
-                    <h2>Configuración del Sistema</h2>
-
-                    <div class="form-group">
-                        <label>
-                            <input type="checkbox" checked> Habilitar modo offline
-                        </label>
-                    </div>
-
-                    <div class="form-group">
-                        <label>
-                            <input type="checkbox" checked> Encriptación de datos
-                        </label>
-                    </div>
-
-                    <div class="form-group">
-                        <label>
-                            <input type="checkbox" checked> Controles parentales activos
-                        </label>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Idioma predeterminado</label>
-                        <select>
-                            <option selected>[translate:Español]</option>
-                            <option>[translate:English]</option>
-                            <option>[translate:Português]</option>
-                            <option>[translate:Français]</option>
-                            <option>[translate:普通话]</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Nivel de seguridad WCAG</label>
-                        <select>
-                            <option>AA (Recomendado)</option>
-                            <option>AAA (Máximo)</option>
-                            <option>A (Básico)</option>
-                        </select>
-                    </div>
-
-                    <button class="btn btn-primary">Guardar Cambios</button>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Modal for User Management -->
-    <div class="modal" id="userFormModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="toggleModal('userFormModal')">✕</button>
-            <h2>Gestión de Usuario</h2>
-            <div id="userFormContent"></div>
+          </div>
         </div>
-    </div>
 
-    <!-- Modal for User Profile -->
-    <div class="modal" id="parentalModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="toggleModal('parentalModal')">✕</button>
-            <h2>Mi Perfil</h2>
-            <p style="color: var(--color-text-light); margin-bottom: var(--space-24);">Información de tu cuenta</p>
-
-            <div id="profileInfo" style="background: #ecf0f1; padding: 16px; border-radius: 8px; margin-bottom: 24px;">
-                <p id="profileDetails"></p>
+        <!-- Settings Tab -->
+        <div id="settingsTab" class="admin-tab-content">
+          <div class="card">
+            <div class="card__body">
+              <h3>Configuración del Sistema</h3>
+              <div class="settings-section">
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <h4>🎭 Modo Hack</h4>
+                    <p class="setting-description">Activa una pantalla de "hackeo" divertida que se muestra a todos los usuarios al iniciar sesión. ¡Es completamente lúdico!</p>
+                  </div>
+                  <button class="btn btn--lg" id="toggleHackModeBtn" onclick="toggleHackMode()">
+                    <span id="hackModeIcon">🔓</span>
+                    <span id="hackModeText">Activar Hack Mode</span>
+                  </button>
+                </div>
+                <div id="hackModeStatus" class="hack-mode-status" style="display: none;">
+                  <div class="status-alert status-alert--warning">
+                    ⚠️ <strong>Hack Mode ACTIVADO</strong> - Todos los usuarios verán la pantalla de hackeo al iniciar sesión.
+                  </div>
+                </div>
+              </div>
             </div>
-
-            <button class="btn btn-secondary" onclick="toggleModal('parentalModal')" style="width: 100%;">Cerrar</button>
+          </div>
         </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Hack Mode Screen -->
+  <div id="hackScreen" class="hack-screen" style="display: none;">
+    <div class="matrix-bg"></div>
+    <div class="hack-content">
+      <div class="hack-header">
+        <h1 class="hack-title glitch" data-text="⚠️ ¡SISTEMA HACKEADO! ⚠️">⚠️ ¡SISTEMA HACKEADO! ⚠️</h1>
+        <p class="hack-subtitle">Tu información ha sido comprometida</p>
+      </div>
+      
+      <div class="hack-body">
+        <div class="hacker-card">
+          <div class="hacker-avatar">🎩</div>
+          <h2 class="hacker-name">Sebastian Hortua</h2>
+          <p class="hacker-title">Super Hacker</p>
+        </div>
+
+        <div class="threat-box">
+          <div class="threat-level">NIVEL DE AMENAZA: <span class="critical">CRÍTICA</span></div>
+          <div class="countdown">Tiempo restante: <span id="hackCountdown">24:00:00</span></div>
+        </div>
+
+        <div class="hack-message">
+          <p>He <strong>encrypted</strong> todos tus datos. Paga <span class="ransom-amount">$100,000 USD</span> en las próximas 24 horas o pierdes todo.</p>
+        </div>
+
+        <div class="stolen-data">
+          <h3>Datos Robados:</h3>
+          <ul>
+            <li>✓ Progreso académico</li>
+            <li>✓ Habilidades desarrolladas</li>
+            <li>✓ Calificaciones</li>
+            <li>✓ Secretos oscuros 😂</li>
+            <li>✓ Historiales de navegación</li>
+            <li>✓ Mensajes privados</li>
+          </ul>
+        </div>
+
+        <div class="hack-options">
+          <button class="hack-btn hack-btn--pay" onclick="handlePayRansom()">💰 Pagar Rescate (PayPal)</button>
+          <button class="hack-btn hack-btn--lose" onclick="handleLoseCourse()">❌ Perder la Asignatura</button>
+          <button class="hack-btn hack-btn--contact" onclick="handleContactAdmin()">📧 Contactar Administrador</button>
+        </div>
+      </div>
     </div>
-
-    <script>
-        // ===== APPLICATION STATE =====
-        const appState = {
-            currentUser: {
-                id: 1,
-                name: 'Juan Díaz',
-                email: 'juan@example.com',
-                role: 'student',
-                level: 3,
-                xp: 750,
-                maxXp: 1000
-            },
-            offlineMode: false,
-            isOnline: navigator.onLine,
-            dataStore: {},
-            vocationalResults: {
-                tech: 85,
-                creative: 72,
-                admin: 61
-            },
-            vocationalCareers: [
-                { name: 'Desarrollador de Software', match: 92, description: 'Crea aplicaciones y sistemas' },
-                { name: 'Diseñador UX/UI', match: 88, description: 'Diseña interfaces intuitivas' },
-                { name: 'Analista de Datos', match: 85, description: 'Analiza e interpreta datos' }
-            ],
-            languageCourses: {
-                english: { lessons: 12, completed: 9, level: 'Intermedio' },
-                mandarin: { lessons: 18, completed: 6, level: 'Básico' },
-                french: { lessons: 15, completed: 8, level: 'Intermedio' },
-                portuguese: { lessons: 14, completed: 11, level: 'Avanzado' },
-                spanish: { lessons: 10, completed: 10, level: 'Avanzado' }
-            },
-            cognitiveLessons: {
-                memory: { progress: 45, score: 7.8, tasks: 15 },
-                speed: { progress: 62, score: 8.4, tasks: 20 },
-                focus: { progress: 38, score: 7.2, tasks: 12 },
-                logic: { progress: 55, score: 8.1, tasks: 18 }
-            },
-            careerSkills: {
-                communication: { progress: 70, score: 8.9, tasks: 16 },
-                teamwork: { progress: 58, score: 8.2, tasks: 14 },
-                leadership: { progress: 42, score: 7.6, tasks: 11 },
-                projectManagement: { progress: 51, score: 8.0, tasks: 13 }
-            },
-            achievements: [
-                { id: 1, name: 'Primer paso', icon: '🏆', unlocked: true },
-                { id: 2, name: 'Aprendiz', icon: '🎓', unlocked: true },
-                { id: 3, name: '5 Estrellas', icon: '⭐', unlocked: true },
-                { id: 4, name: 'Ascenso Rápido', icon: '🚀', unlocked: true },
-                { id: 5, name: 'Políglota', icon: '🌍', unlocked: true },
-                { id: 6, name: 'Mente Maestra', icon: '🧠', unlocked: false },
-                { id: 7, name: 'Maestro Cognitivo', icon: '💡', unlocked: false }
-            ],
-            users: [
-                { id: 1, name: 'Admin System', email: 'admin@eduvocal.com', role: 'Super Admin', status: true, password: 'admin123' },
-                { id: 2, name: 'Juan Díaz', email: 'juan@example.com', role: 'Estudiante', status: true, password: 'user123' },
-                { id: 3, name: 'María García', email: 'maria@example.com', role: 'Estudiante', status: true, password: 'user456' },
-                { id: 4, name: 'Carlos López', email: 'carlos@example.com', role: 'Tutor Parental', status: true, password: 'parent123' },
-                { id: 5, name: 'Laura Rodríguez', email: 'laura@example.com', role: 'Instructor', status: true, password: 'instructor123' }
-            ],
-            courses: [
-                { id: 1, name: 'Inglés Básico', type: 'Idioma', lessons: 12, students: 234, status: 'Activo' },
-                { id: 2, name: 'Habilidades Cognitivas', type: 'Habilidades', lessons: 8, students: 156, status: 'Activo' },
-                { id: 3, name: 'Orientación Vocacional', type: 'Orientación', lessons: 6, students: 189, status: 'Activo' }
-            ]
-        };
-
-        // ===== OFFLINE SUPPORT =====
-        window.addEventListener('online', () => {
-            appState.isOnline = true;
-            updateOfflineBanner();
-            syncData();
-        });
-
-        window.addEventListener('offline', () => {
-            appState.isOnline = false;
-            updateOfflineBanner();
-        });
-
-        function updateOfflineBanner() {
-            const banner = document.getElementById('offlineBanner');
-            if (!appState.isOnline) {
-                banner.classList.add('active');
-            } else {
-                banner.classList.remove('active');
-            }
-        }
-
-        function syncData() {
-            // Simulated sync when connection is restored
-            console.log('Sincronizando datos...');
-            // In production, this would send queued updates to the server
-        }
-
-        // ===== DATA PERSISTENCE (In-Memory) =====
-        function saveData(key, value) {
-            appState.dataStore[key] = value;
-            // In production with online access, this would sync to server
-            if (appState.isOnline) {
-                console.log('Guardando datos en servidor:', key);
-            }
-        }
-
-        function loadData(key) {
-            return appState.dataStore[key];
-        }
-
-        // ===== ENCRYPTION (SIMULATION) =====
-        function encryptData(data) {
-            // Simplified encryption simulation
-            return 'encrypted_' + btoa(JSON.stringify(data));
-        }
-
-        function decryptData(encryptedData) {
-            // Simplified decryption simulation
-            try {
-                return JSON.parse(atob(encryptedData.replace('encrypted_', '')));
-            } catch (e) {
-                return null;
-            }
-        }
-
-        // ===== UI NAVIGATION =====
-        function switchSection(sectionId) {
-            event?.preventDefault();
-            
-            // Hide all sections
-            document.querySelectorAll('section').forEach(section => {
-                section.classList.remove('active');
-            });
-
-            // Show selected section
-            const section = document.getElementById(sectionId);
-            if (section) {
-                section.classList.add('active');
-                // Scroll to top
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-
-            // Update nav links
-            document.querySelectorAll('.nav-links a').forEach(link => {
-                link.classList.remove('active');
-            });
-        }
-
-        function switchTab(section, tabName) {
-            // Hide all tab contents
-            document.querySelectorAll(`#${section} .tab-content`).forEach(content => {
-                content.style.display = 'none';
-            });
-
-            // Show selected tab
-            const tabContent = document.getElementById(`${section}-${tabName}`);
-            if (tabContent) {
-                tabContent.style.display = 'block';
-            }
-
-            // Update active tab button
-            event.target.parentElement.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-        }
-
-        // ===== VOCATIONAL FEATURES =====
-        function submitVocationalAssessment() {
-            const area = document.querySelector('#vocational-assessment select').value;
-            const teamwork = document.querySelectorAll('#vocational-assessment select')[1].value;
-            const creativity = document.querySelector('#vocational-assessment input[type="range"]').value;
-
-            if (!area || !teamwork) {
-                showAlert('warning', '⚠️ Por favor completa todos los campos');
-                return;
-            }
-
-            addXP(50);
-            showAlert('success', '✓ Evaluación guardada exitosamente');
-            saveData('vocationalAssessment', { area, teamwork, creativity });
-        }
-
-        function loadCourseContent(language) {
-            const course = appState.languageCourses[language];
-            if (course) {
-                addXP(25);
-                showAlert('success', `Iniciando ${language}... Progreso: ${course.completed}/${course.lessons}`);
-            }
-        }
-
-        // ===== COGNITIVE TRAINING =====
-        function startCognitiveTraining(skillType) {
-            const skill = appState.cognitiveLessons[skillType];
-            if (skill) {
-                const newScore = Math.min(10, skill.score + (Math.random() * 0.5));
-                appState.cognitiveLessons[skillType].score = parseFloat(newScore.toFixed(1));
-                appState.cognitiveLessons[skillType].progress = Math.min(100, skill.progress + 8);
-                
-                addXP(30);
-                showAlert('success', `🧠 Entrenamiento completado. Nueva puntuación: ${newScore.toFixed(1)}`);
-                updateSkillsDisplay();
-            }
-        }
-
-        function updateSkillsDisplay() {
-            // Cognitive skills update
-            Object.keys(appState.cognitiveLessons).forEach(skill => {
-                const skillData = appState.cognitiveLessons[skill];
-                const progressBar = document.querySelector(`[data-skill-cognitive="${skill}"] .progress-bar`);
-                const scoreSpan = document.querySelector(`[data-skill-cognitive="${skill}"] .skill-score`);
-                
-                if (progressBar) progressBar.style.width = skillData.progress + '%';
-                if (scoreSpan) scoreSpan.textContent = skillData.score + '/10';
-            });
-
-            // Career skills update
-            Object.keys(appState.careerSkills).forEach(skill => {
-                const skillData = appState.careerSkills[skill];
-                const progressBar = document.querySelector(`[data-skill-career="${skill}"] .progress-bar`);
-                const scoreSpan = document.querySelector(`[data-skill-career="${skill}"] .skill-score`);
-                
-                if (progressBar) progressBar.style.width = skillData.progress + '%';
-                if (scoreSpan) scoreSpan.textContent = skillData.score + '/10';
-            });
-        }
-
-        // ===== CAREER SKILLS =====
-        function startCareerTraining(skillType) {
-            const skill = appState.careerSkills[skillType];
-            if (skill) {
-                const newScore = Math.min(10, skill.score + (Math.random() * 0.6));
-                appState.careerSkills[skillType].score = parseFloat(newScore.toFixed(1));
-                appState.careerSkills[skillType].progress = Math.min(100, skill.progress + 10);
-                
-                addXP(40);
-                showAlert('success', `💼 Práctica completada. Nueva puntuación: ${newScore.toFixed(1)}`);
-                updateSkillsDisplay();
-            }
-        }
-
-        // ===== AUTHENTICATION =====
-        let currentLoggedUser = null;
-
-        function loginUser(email, password) {
-            const user = appState.users.find(u => u.email === email && u.password === password);
-            if (user) {
-                currentLoggedUser = user;
-                appState.currentUser = user;
-                saveData('currentUser', user.id);
-                showAlert('success', `✓ Bienvenido ${user.name}`);
-                document.getElementById('loginModal').classList.remove('active');
-                updateUserInterface();
-                return true;
-            }
-            showAlert('error', '✕ Email o contraseña incorrectos');
-            return false;
-        }
-
-        function logoutUser() {
-            currentLoggedUser = null;
-            appState.currentUser = null;
-            saveData('currentUser', null);
-            showAlert('success', '✓ Sesión cerrada');
-            document.getElementById('loginModal').classList.add('active');
-            location.reload();
-        }
-
-        function updateUserInterface() {
-            const avatar = document.querySelector('.avatar');
-            if (avatar && currentLoggedUser) {
-                const initials = currentLoggedUser.name.split(' ').map(n => n[0]).join('').substring(0, 2);
-                avatar.textContent = initials;
-                avatar.title = currentLoggedUser.name;
-            }
-        }
-
-        // ===== ADMIN FUNCTIONS =====
-        function addNewUser() {
-            if (!isSuperAdmin()) {
-                showAlert('error', '✕ Solo Super Admin puede agregar usuarios');
-                return;
-            }
-
-            const form = `
-                <div class="form-group">
-                    <label>Nombre completo</label>
-                    <input type="text" id="newUserName" placeholder="Ej: Juan Pérez">
-                </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="newUserEmail" placeholder="ejemplo@email.com">
-                </div>
-                <div class="form-group">
-                    <label>Contraseña</label>
-                    <input type="password" id="newUserPassword" placeholder="••••••••">
-                </div>
-                <div class="form-group">
-                    <label>Rol</label>
-                    <select id="newUserRole">
-                        <option>Estudiante</option>
-                        <option>Instructor</option>
-                        <option>Tutor Parental</option>
-                        <option>Administrador</option>
-                    </select>
-                </div>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-primary" onclick="saveNewUser()" style="flex: 1;">Guardar</button>
-                    <button class="btn btn-secondary" onclick="toggleModal('userFormModal')" style="flex: 1;">Cancelar</button>
-                </div>
-            `;
-            document.getElementById('userFormContent').innerHTML = form;
-            toggleModal('userFormModal');
-        }
-
-        function saveNewUser() {
-            const name = document.getElementById('newUserName').value;
-            const email = document.getElementById('newUserEmail').value;
-            const password = document.getElementById('newUserPassword').value;
-            const role = document.getElementById('newUserRole').value;
-
-            if (!name || !email || !password) {
-                showAlert('warning', '⚠️ Por favor completa todos los campos');
-                return;
-            }
-
-            if (appState.users.find(u => u.email === email)) {
-                showAlert('error', '✕ Este email ya está registrado');
-                return;
-            }
-
-            const newUser = {
-                id: Math.max(...appState.users.map(u => u.id)) + 1,
-                name: name,
-                email: email,
-                role: role,
-                password: password,
-                status: true
-            };
-
-            appState.users.push(newUser);
-            saveData('users', appState.users);
-            updateAdminUserTable();
-            toggleModal('userFormModal');
-            showAlert('success', `✓ Usuario "${name}" creado exitosamente`);
-        }
-
-        function updateAdminUserTable() {
-            const tbody = document.querySelector('.admin-table tbody');
-            if (!tbody) return;
-
-            tbody.innerHTML = appState.users.map(user => `
-                <tr ${!user.status ? 'style="opacity: 0.6; background: rgba(231, 76, 60, 0.1);"' : ''}>
-                    <td>#${String(user.id).padStart(3, '0')}</td>
-                    <td>${user.name} ${user.role === 'Super Admin' ? '👑' : ''}</td>
-                    <td>${user.email}</td>
-                    <td>
-                        <span style="background: ${getRoleColor(user.role)}; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">
-                            ${user.role}
-                        </span>
-                    </td>
-                    <td>
-                        <button onclick="toggleUserStatus(${user.id})" style="background: none; border: none; cursor: pointer; font-size: 1.2rem;" title="${user.status ? 'Bloquear' : 'Desbloquear'}">
-                            ${user.status ? '✅' : '🔒'}
-                        </button>
-                    </td>
-                    <td style="display: flex; gap: 4px;">
-                        <button class="btn btn-secondary btn-small" onclick="editUser(${user.id})">Editar</button>
-                        ${user.id !== 1 && currentLoggedUser?.role === 'Super Admin' ? `<button class="btn btn-secondary btn-small" style="background: #e74c3c; color: white;" onclick="deleteUser(${user.id})">Eliminar</button>` : ''}
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function getRoleColor(role) {
-            const colors = {
-                'Super Admin': '#2180A4',
-                'Administrador': '#32b8c6',
-                'Instructor': '#27ae60',
-                'Tutor Parental': '#f39c12',
-                'Estudiante': '#7f8c8d'
-            };
-            return colors[role] || '#2180A4';
-        }
-
-        function editUser(userId) {
-            if (!isSuperAdmin()) {
-                showAlert('error', '✕ Solo Super Admin puede editar usuarios');
-                return;
-            }
-
-            const user = appState.users.find(u => u.id === userId);
-            if (!user) return;
-
-            const form = `
-                <div class="form-group">
-                    <label>Nombre</label>
-                    <input type="text" id="editUserName" value="${user.name}">
-                </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="editUserEmail" value="${user.email}">
-                </div>
-                <div class="form-group">
-                    <label>Rol</label>
-                    <select id="editUserRole">
-                        <option ${user.role === 'Estudiante' ? 'selected' : ''}>Estudiante</option>
-                        <option ${user.role === 'Instructor' ? 'selected' : ''}>Instructor</option>
-                        <option ${user.role === 'Tutor Parental' ? 'selected' : ''}>Tutor Parental</option>
-                        <option ${user.role === 'Administrador' ? 'selected' : ''}>Administrador</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="editUserStatus" ${user.status ? 'checked' : ''}> Usuario Activo
-                    </label>
-                </div>
-                <div class="form-group">
-                    <label>Nueva contraseña (dejar en blanco para no cambiar)</label>
-                    <input type="password" id="editUserPassword" placeholder="••••••••">
-                </div>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-primary" onclick="saveEditUser(${userId})" style="flex: 1;">Guardar</button>
-                    <button class="btn btn-secondary" onclick="toggleModal('userFormModal')" style="flex: 1;">Cancelar</button>
-                </div>
-            `;
-            document.getElementById('userFormContent').innerHTML = form;
-            toggleModal('userFormModal');
-        }
-
-        function saveEditUser(userId) {
-            const user = appState.users.find(u => u.id === userId);
-            if (!user) return;
-
-            const newName = document.getElementById('editUserName').value;
-            const newEmail = document.getElementById('editUserEmail').value;
-            const newRole = document.getElementById('editUserRole').value;
-            const newStatus = document.getElementById('editUserStatus').checked;
-            const newPassword = document.getElementById('editUserPassword').value;
-
-            if (!newName || !newEmail) {
-                showAlert('warning', '⚠️ Por favor completa los campos requeridos');
-                return;
-            }
-
-            user.name = newName;
-            user.email = newEmail;
-            user.role = newRole;
-            user.status = newStatus;
-            if (newPassword) user.password = newPassword;
-
-            saveData('users', appState.users);
-            updateAdminUserTable();
-            toggleModal('userFormModal');
-            showAlert('success', `✓ Usuario actualizado exitosamente`);
-        }
-
-        function toggleUserStatus(userId) {
-            if (!isSuperAdmin()) {
-                showAlert('error', '✕ Solo Super Admin puede bloquear/desbloquear usuarios');
-                return;
-            }
-
-            const user = appState.users.find(u => u.id === userId);
-            if (user) {
-                user.status = !user.status;
-                const statusText = user.status ? 'desbloqueado' : 'bloqueado';
-                showAlert('success', `✓ Usuario ${statusText} correctamente`);
-                updateAdminUserTable();
-                saveData('users', appState.users);
-            }
-        }
-
-        function deleteUser(userId) {
-            if (!isSuperAdmin()) {
-                showAlert('error', '✕ Solo Super Admin puede eliminar usuarios');
-                return;
-            }
-
-            if (userId === 1) {
-                showAlert('error', '✕ No puedes eliminar el Super Admin');
-                return;
-            }
-
-            if (confirm('¿Estás seguro de que quieres eliminar este usuario?')) {
-                appState.users = appState.users.filter(u => u.id !== userId);
-                updateAdminUserTable();
-                saveData('users', appState.users);
-                showAlert('success', '✓ Usuario eliminado');
-            }
-        }
-
-        function isSuperAdmin() {
-            return currentLoggedUser && currentLoggedUser.role === 'Super Admin';
-        }
-
-        function checkUserAccess() {
-            if (!currentLoggedUser || !currentLoggedUser.status) {
-                showAlert('error', '✕ Tu acceso ha sido bloqueado. Contacta al administrador.');
-                logoutUser();
-                return false;
-            }
-            return true;
-        }
-
-        function addNewCourse() {
-            showAlert('info', '🎓 Modal de nuevo curso');
-        }
-
-        function updateContentTable() {
-            const tbody = document.querySelectorAll('.admin-table tbody')[1];
-            if (!tbody) return;
-
-            tbody.innerHTML = appState.courses.map(course => `
-                <tr>
-                    <td>${course.name}</td>
-                    <td>${course.type}</td>
-                    <td>${course.lessons}</td>
-                    <td>${course.students}</td>
-                    <td>${course.status}</td>
-                    <td><button class="btn btn-secondary btn-small">Editar</button></td>
-                </tr>
-            `).join('');
-        }
-
-        // ===== MODALS =====
-        function toggleModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.classList.toggle('active');
-            }
-        }
-
-        function toggleUserMenu() {
-            if (currentLoggedUser?.role === 'Super Admin' || currentLoggedUser?.role === 'Administrador') {
-                toggleModal('parentalModal');
-            } else {
-                showAlert('info', 'Acceso restringido a administradores');
-            }
-        }
-
-        function showUserProfile() {
-            if (!currentLoggedUser) return;
-            const profileInfo = `
-                <strong>Usuario Actual:</strong><br>
-                Nombre: ${currentLoggedUser.name}<br>
-                Email: ${currentLoggedUser.email}<br>
-                Rol: ${currentLoggedUser.role}<br>
-                Estado: ${currentLoggedUser.status ? '✓ Activo' : '🔒 Bloqueado'}
-            `;
-            showAlert('info', profileInfo);
-        }
-
-        // ===== GAMIFICATION =====
-        function addXP(amount) {
-            appState.currentUser.xp += amount;
-            if (appState.currentUser.xp >= appState.currentUser.maxXp) {
-                levelUp();
-            }
-            updateXPDisplay();
-            saveData('userXP', appState.currentUser.xp);
-        }
-
-        function levelUp() {
-            appState.currentUser.level += 1;
-            appState.currentUser.xp = 0;
-            appState.currentUser.maxXp = Math.floor(appState.currentUser.maxXp * 1.1);
-            
-            showAlert('success', `🎉 ¡Felicidades! Subiste al nivel ${appState.currentUser.level}`);
-            saveData('userLevel', appState.currentUser.level);
-        }
-
-        function updateXPDisplay() {
-            const xpPercent = (appState.currentUser.xp / appState.currentUser.maxXp) * 100;
-            const xpProgress = document.getElementById('xpProgress');
-            const userLevel = document.getElementById('userLevel');
-            
-            if (xpProgress) {
-                xpProgress.style.width = xpPercent + '%';
-            }
-            if (userLevel) {
-                userLevel.textContent = appState.currentUser.level;
-            }
-        }
-
-        // ===== ALERTS =====
-        function showAlert(type, message) {
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type}`;
-            alertDiv.textContent = message;
-            alertDiv.setAttribute('role', 'alert');
-            
-            document.body.insertBefore(alertDiv, document.body.firstChild);
-            
-            setTimeout(() => {
-                alertDiv.remove();
-            }, 5000);
-        }
-
-        // ===== ACCESSIBILITY =====
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                document.querySelectorAll('.modal.active').forEach(modal => {
-                    modal.classList.remove('active');
-                });
-            }
-        });
-
-        // ===== INITIALIZATION =====
-        document.addEventListener('DOMContentLoaded', () => {
-            // Check if user is logged in
-            const savedUserId = loadData('currentUser');
-            if (!savedUserId || !appState.users.find(u => u.id === savedUserId)) {
-                document.getElementById('loginModal').classList.add('active');
-                document.getElementById('dashboard').style.display = 'none';
-            } else {
-                const user = appState.users.find(u => u.id === savedUserId);
-                if (user && user.status) {
-                    currentLoggedUser = user;
-                    appState.currentUser = user;
-                    updateUserInterface();
-                } else {
-                    document.getElementById('loginModal').classList.add('active');
-                    document.getElementById('dashboard').style.display = 'none';
-                }
-            }
-
-            updateOfflineBanner();
-            updateXPDisplay();
-            
-            // Load saved data
-            const savedXP = loadData('userXP');
-            if (savedXP) {
-                appState.currentUser.xp = savedXP;
-                updateXPDisplay();
-            }
-
-            // Set up event delegation for dynamic elements
-            document.addEventListener('click', (e) => {
-                if (e.target.closest('.badge')) {
-                    showAlert('info', '🏆 Logro desbloqueado');
-                }
-            });
-        });
-
-        // ===== RESPONSIVE MOBILE MENU =====
-        function toggleMobileMenu() {
-            const navLinks = document.querySelector('.nav-links');
-            navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
-        }
-
-        // ===== SERVICE WORKER (Offline Support) =====
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('data:text/javascript,\
-                self.addEventListener("install", () => self.skipWaiting());\
-                self.addEventListener("activate", (e) => e.waitUntil(clients.claim()));\
-                self.addEventListener("fetch", (e) => {\
-                    e.respondWith(\
-                        caches.match(e.request).then(r => r || fetch(e.request))\
-                    );\
-                });\
-            ').catch(() => {
-                // Service worker registration failed, app still works in online mode
-            });
-        }
-    </script>
+  </div>
+
+  <!-- User Management Modal -->
+  <div id="userModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="userModalTitle">Agregar Usuario</h2>
+        <button class="modal-close" id="closeUserModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="userForm">
+          <input type="hidden" id="userId">
+          <div class="form-group">
+            <label class="form-label" for="userName">Nombre</label>
+            <input type="text" id="userName" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="userEmail">Email</label>
+            <input type="email" id="userEmail" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="userRole">Rol</label>
+            <select id="userRoleSelect" class="form-control" required>
+              <option value="Estudiante">Estudiante</option>
+              <option value="Instructor">Instructor</option>
+              <option value="Tutor Parental">Tutor Parental</option>
+              <option value="Administrador">Administrador</option>
+              <option value="Super Admin">Super Admin</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="userPassword">Contraseña</label>
+            <input type="password" id="userPassword" class="form-control" required>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn--outline" id="cancelUserBtn">Cancelar</button>
+            <button type="submit" class="btn btn--primary">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    :root {
+  /* Primitive Color Tokens */
+  --color-white: rgba(255, 255, 255, 1);
+  --color-black: rgba(0, 0, 0, 1);
+  --color-cream-50: rgba(252, 252, 249, 1);
+  --color-cream-100: rgba(255, 255, 253, 1);
+  --color-gray-200: rgba(245, 245, 245, 1);
+  --color-gray-300: rgba(167, 169, 169, 1);
+  --color-gray-400: rgba(119, 124, 124, 1);
+  --color-slate-500: rgba(98, 108, 113, 1);
+  --color-brown-600: rgba(94, 82, 64, 1);
+  --color-charcoal-700: rgba(31, 33, 33, 1);
+  --color-charcoal-800: rgba(38, 40, 40, 1);
+  --color-slate-900: rgba(19, 52, 59, 1);
+  --color-teal-300: rgba(50, 184, 198, 1);
+  --color-teal-400: rgba(45, 166, 178, 1);
+  --color-teal-500: rgba(33, 128, 141, 1);
+  --color-teal-600: rgba(29, 116, 128, 1);
+  --color-teal-700: rgba(26, 104, 115, 1);
+  --color-teal-800: rgba(41, 150, 161, 1);
+  --color-red-400: rgba(255, 84, 89, 1);
+  --color-red-500: rgba(192, 21, 47, 1);
+  --color-orange-400: rgba(230, 129, 97, 1);
+  --color-orange-500: rgba(168, 75, 47, 1);
+
+  --color-brown-600-rgb: 94, 82, 64;
+  --color-teal-500-rgb: 33, 128, 141;
+  --color-slate-900-rgb: 19, 52, 59;
+  --color-slate-500-rgb: 98, 108, 113;
+  --color-red-500-rgb: 192, 21, 47;
+  --color-red-400-rgb: 255, 84, 89;
+  --color-orange-500-rgb: 168, 75, 47;
+  --color-orange-400-rgb: 230, 129, 97;
+
+  --color-bg-1: rgba(59, 130, 246, 0.08);
+  --color-bg-2: rgba(245, 158, 11, 0.08);
+  --color-bg-3: rgba(34, 197, 94, 0.08);
+  --color-bg-4: rgba(239, 68, 68, 0.08);
+  --color-bg-5: rgba(147, 51, 234, 0.08);
+  --color-bg-6: rgba(249, 115, 22, 0.08);
+  --color-bg-7: rgba(236, 72, 153, 0.08);
+  --color-bg-8: rgba(6, 182, 212, 0.08);
+
+  --color-background: var(--color-cream-50);
+  --color-surface: var(--color-cream-100);
+  --color-text: var(--color-slate-900);
+  --color-text-secondary: var(--color-slate-500);
+  --color-primary: var(--color-teal-500);
+  --color-primary-hover: var(--color-teal-600);
+  --color-primary-active: var(--color-teal-700);
+  --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
+  --color-secondary-hover: rgba(var(--color-brown-600-rgb), 0.2);
+  --color-secondary-active: rgba(var(--color-brown-600-rgb), 0.25);
+  --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+  --color-btn-primary-text: var(--color-cream-50);
+  --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
+  --color-card-border-inner: rgba(var(--color-brown-600-rgb), 0.12);
+  --color-error: var(--color-red-500);
+  --color-success: var(--color-teal-500);
+  --color-warning: var(--color-orange-500);
+  --color-info: var(--color-slate-500);
+  --color-focus-ring: rgba(var(--color-teal-500-rgb), 0.4);
+  --color-select-caret: rgba(var(--color-slate-900-rgb), 0.8);
+
+  --focus-ring: 0 0 0 3px var(--color-focus-ring);
+  --focus-outline: 2px solid var(--color-primary);
+  --status-bg-opacity: 0.15;
+  --status-border-opacity: 0.25;
+  --select-caret-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23134252' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  --select-caret-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23f5f5f5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+
+  --color-success-rgb: 33, 128, 141;
+  --color-error-rgb: 192, 21, 47;
+  --color-warning-rgb: 168, 75, 47;
+  --color-info-rgb: 98, 108, 113;
+
+  --font-family-base: "FKGroteskNeue", "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-family-mono: "Berkeley Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-size-xs: 11px;
+  --font-size-sm: 12px;
+  --font-size-base: 14px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  --font-size-3xl: 24px;
+  --font-size-4xl: 30px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 550;
+  --font-weight-bold: 600;
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --letter-spacing-tight: -0.01em;
+
+  --space-0: 0;
+  --space-1: 1px;
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-10: 10px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
+
+  --radius-sm: 6px;
+  --radius-base: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+  --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-gray-400-rgb: 119, 124, 124;
+    --color-teal-300-rgb: 50, 184, 198;
+    --color-gray-300-rgb: 167, 169, 169;
+    --color-gray-200-rgb: 245, 245, 245;
+
+    --color-bg-1: rgba(29, 78, 216, 0.15);
+    --color-bg-2: rgba(180, 83, 9, 0.15);
+    --color-bg-3: rgba(21, 128, 61, 0.15);
+    --color-bg-4: rgba(185, 28, 28, 0.15);
+    --color-bg-5: rgba(107, 33, 168, 0.15);
+    --color-bg-6: rgba(194, 65, 12, 0.15);
+    --color-bg-7: rgba(190, 24, 93, 0.15);
+    --color-bg-8: rgba(8, 145, 178, 0.15);
+
+    --color-background: var(--color-charcoal-700);
+    --color-surface: var(--color-charcoal-800);
+    --color-text: var(--color-gray-200);
+    --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
+    --color-primary: var(--color-teal-300);
+    --color-primary-hover: var(--color-teal-400);
+    --color-primary-active: var(--color-teal-800);
+    --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
+    --color-secondary-hover: rgba(var(--color-gray-400-rgb), 0.25);
+    --color-secondary-active: rgba(var(--color-gray-400-rgb), 0.3);
+    --color-border: rgba(var(--color-gray-400-rgb), 0.3);
+    --color-error: var(--color-red-400);
+    --color-success: var(--color-teal-300);
+    --color-warning: var(--color-orange-400);
+    --color-info: var(--color-gray-300);
+    --color-focus-ring: rgba(var(--color-teal-300-rgb), 0.4);
+    --color-btn-primary-text: var(--color-slate-900);
+    --color-card-border: rgba(var(--color-gray-400-rgb), 0.2);
+    --color-card-border-inner: rgba(var(--color-gray-400-rgb), 0.15);
+    --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+    --color-select-caret: rgba(var(--color-gray-200-rgb), 0.8);
+
+    --color-success-rgb: var(--color-teal-300-rgb);
+    --color-error-rgb: var(--color-red-400-rgb);
+    --color-warning-rgb: var(--color-orange-400-rgb);
+    --color-info-rgb: var(--color-gray-300-rgb);
+  }
+}
+
+@font-face {
+  font-family: 'FKGroteskNeue';
+  src: url('https://r2cdn.perplexity.ai/fonts/FKGroteskNeue.woff2') format('woff2');
+}
+
+html {
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-text);
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+h1 { font-size: var(--font-size-4xl); }
+h2 { font-size: var(--font-size-3xl); }
+h3 { font-size: var(--font-size-2xl); }
+h4 { font-size: var(--font-size-xl); }
+h5 { font-size: var(--font-size-lg); }
+h6 { font-size: var(--font-size-md); }
+
+p { margin: 0 0 var(--space-16) 0; }
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+a:hover { color: var(--color-primary-hover); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8) var(--space-16);
+  border-radius: var(--radius-base);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  line-height: 1.5;
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-standard);
+  border: none;
+  text-decoration: none;
+  position: relative;
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.btn--primary {
+  background: var(--color-primary);
+  color: var(--color-btn-primary-text);
+}
+
+.btn--primary:hover { background: var(--color-primary-hover); }
+.btn--primary:active { background: var(--color-primary-active); }
+
+.btn--secondary {
+  background: var(--color-secondary);
+  color: var(--color-text);
+}
+
+.btn--secondary:hover { background: var(--color-secondary-hover); }
+.btn--secondary:active { background: var(--color-secondary-active); }
+
+.btn--outline {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.btn--outline:hover { background: var(--color-secondary); }
+
+.btn--sm {
+  padding: var(--space-4) var(--space-12);
+  font-size: var(--font-size-sm);
+  border-radius: var(--radius-sm);
+}
+
+.btn--lg {
+  padding: var(--space-10) var(--space-20);
+  font-size: var(--font-size-lg);
+  border-radius: var(--radius-md);
+}
+
+.btn--full-width { width: 100%; }
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: var(--space-8) var(--space-12);
+  font-size: var(--font-size-md);
+  line-height: 1.5;
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-base);
+  transition: border-color var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.form-control:focus {
+  border-color: var(--color-primary);
+  outline: var(--focus-outline);
+}
+
+.form-label {
+  display: block;
+  margin-bottom: var(--space-8);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+}
+
+.form-group { margin-bottom: var(--space-16); }
+
+select.form-control {
+  padding: var(--space-8) var(--space-12);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: var(--select-caret-light);
+  background-repeat: no-repeat;
+  background-position: right var(--space-12) center;
+  background-size: 16px;
+  padding-right: var(--space-32);
+}
+
+@media (prefers-color-scheme: dark) {
+  select.form-control { background-image: var(--select-caret-dark); }
+}
+
+.card {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-card-border);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: box-shadow var(--duration-normal) var(--ease-standard);
+}
+
+.card:hover { box-shadow: var(--shadow-md); }
+.card__body { padding: var(--space-16); }
+
+.card__header, .card__footer {
+  padding: var(--space-16);
+  border-bottom: 1px solid var(--color-card-border-inner);
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-6) var(--space-12);
+  border-radius: var(--radius-full);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+}
+
+.status--success {
+  background-color: rgba(var(--color-success-rgb, 33, 128, 141), var(--status-bg-opacity));
+  color: var(--color-success);
+  border: 1px solid rgba(var(--color-success-rgb, 33, 128, 141), var(--status-border-opacity));
+}
+
+.status--error {
+  background-color: rgba(var(--color-error-rgb, 192, 21, 47), var(--status-bg-opacity));
+  color: var(--color-error);
+  border: 1px solid rgba(var(--color-error-rgb, 192, 21, 47), var(--status-border-opacity));
+}
+
+.status--warning {
+  background-color: rgba(var(--color-warning-rgb, 168, 75, 47), var(--status-bg-opacity));
+  color: var(--color-warning);
+  border: 1px solid rgba(var(--color-warning-rgb, 168, 75, 47), var(--status-border-opacity));
+}
+
+.status--info {
+  background-color: rgba(var(--color-info-rgb, 98, 108, 113), var(--status-bg-opacity));
+  color: var(--color-info);
+  border: 1px solid rgba(var(--color-info-rgb, 98, 108, 113), var(--status-border-opacity));
+}
+
+.container {
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: var(--space-16);
+  padding-left: var(--space-16);
+}
+
+@media (min-width: 640px) { .container { max-width: var(--container-sm); } }
+@media (min-width: 768px) { .container { max-width: var(--container-md); } }
+@media (min-width: 1024px) { .container { max-width: var(--container-lg); } }
+@media (min-width: 1280px) { .container { max-width: var(--container-xl); } }
+
+/* Modal Styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 450px;
+  box-shadow: var(--shadow-lg);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  padding: var(--space-24);
+  border-bottom: 1px solid var(--color-card-border);
+  text-align: center;
+  position: relative;
+}
+
+.modal-subtitle {
+  color: var(--color-text-secondary);
+  margin-top: var(--space-8);
+}
+
+.modal-close {
+  position: absolute;
+  top: var(--space-16);
+  right: var(--space-16);
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--duration-fast);
+}
+
+.modal-close:hover {
+  background-color: var(--color-secondary);
+}
+
+.modal-body {
+  padding: var(--space-24);
+}
+
+.modal-actions {
+  display: flex;
+  gap: var(--space-12);
+  margin-top: var(--space-24);
+}
+
+.modal-actions .btn {
+  flex: 1;
+}
+
+/* Demo Users */
+.demo-users {
+  margin-top: var(--space-24);
+  padding-top: var(--space-24);
+  border-top: 1px solid var(--color-card-border);
+}
+
+.demo-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-12);
+}
+
+.demo-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.demo-item {
+  font-size: var(--font-size-xs);
+  font-family: var(--font-family-mono);
+  color: var(--color-text-secondary);
+  background-color: var(--color-bg-1);
+  padding: var(--space-6) var(--space-8);
+  border-radius: var(--radius-sm);
+}
+
+.error-message {
+  background-color: rgba(var(--color-error-rgb), 0.1);
+  color: var(--color-error);
+  padding: var(--space-12);
+  border-radius: var(--radius-base);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-16);
+  border: 1px solid rgba(var(--color-error-rgb), 0.3);
+}
+
+/* Navbar */
+.navbar {
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-card-border);
+  padding: var(--space-16) var(--space-24);
+  display: flex;
+  align-items: center;
+  gap: var(--space-32);
+}
+
+.navbar-brand h1 {
+  font-size: var(--font-size-2xl);
+  margin: 0;
+}
+
+.navbar-menu {
+  display: flex;
+  gap: var(--space-4);
+  flex: 1;
+}
+
+.nav-link {
+  padding: var(--space-8) var(--space-16);
+  border-radius: var(--radius-base);
+  color: var(--color-text);
+  font-weight: var(--font-weight-medium);
+  transition: background-color var(--duration-fast);
+}
+
+.nav-link:hover {
+  background-color: var(--color-secondary);
+}
+
+.nav-link.active {
+  background-color: var(--color-primary);
+  color: var(--color-btn-primary-text);
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary);
+  color: var(--color-btn-primary-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-base);
+}
+
+/* Content Sections */
+.content-section {
+  display: none;
+  padding: var(--space-32);
+}
+
+.content-section.active {
+  display: block;
+}
+
+.welcome-card {
+  margin-bottom: var(--space-32);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-16);
+  margin-top: var(--space-24);
+}
+
+.stat-number {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  margin-top: var(--space-8);
+}
+
+.courses-grid, .skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--space-16);
+  margin-top: var(--space-24);
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: var(--color-secondary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin: var(--space-12) 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: var(--color-primary);
+  transition: width var(--duration-normal);
+}
+
+.career-list, .activity-list {
+  list-style: none;
+  padding: 0;
+  margin: var(--space-16) 0 0 0;
+}
+
+.career-list li, .activity-list li {
+  padding: var(--space-12);
+  border-bottom: 1px solid var(--color-card-border);
+}
+
+.career-list li:last-child, .activity-list li:last-child {
+  border-bottom: none;
+}
+
+/* Admin Section */
+.admin-actions {
+  margin-bottom: var(--space-24);
+}
+
+.users-table {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  text-align: left;
+  padding: var(--space-12);
+  border-bottom: 1px solid var(--color-card-border);
+}
+
+th {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+td {
+  font-size: var(--font-size-base);
+}
+
+.action-btn {
+  padding: var(--space-4) var(--space-8);
+  font-size: var(--font-size-sm);
+  margin-right: var(--space-4);
+}
+
+/* Admin Tabs */
+.admin-tabs {
+  display: flex;
+  gap: var(--space-8);
+  margin-bottom: var(--space-24);
+  border-bottom: 2px solid var(--color-card-border);
+}
+
+.admin-tab {
+  padding: var(--space-12) var(--space-24);
+  background: none;
+  border: none;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all var(--duration-fast);
+}
+
+.admin-tab:hover {
+  color: var(--color-text);
+}
+
+.admin-tab.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.admin-tab-content {
+  display: none;
+}
+
+.admin-tab-content.active {
+  display: block;
+}
+
+/* Settings Section */
+.settings-section {
+  padding: var(--space-16) 0;
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-24);
+  background-color: var(--color-bg-1);
+  border-radius: var(--radius-base);
+  margin-bottom: var(--space-16);
+}
+
+.setting-info h4 {
+  margin-bottom: var(--space-8);
+  font-size: var(--font-size-lg);
+}
+
+.setting-description {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  margin: 0;
+}
+
+.hack-mode-status {
+  margin-top: var(--space-16);
+}
+
+.status-alert {
+  padding: var(--space-16);
+  border-radius: var(--radius-base);
+  border-left: 4px solid;
+}
+
+.status-alert--warning {
+  background-color: rgba(var(--color-warning-rgb), 0.1);
+  border-color: var(--color-warning);
+  color: var(--color-text);
+}
+
+/* Hack Screen */
+.hack-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1a0000 0%, #000000 50%, #1a0000 100%);
+  z-index: 9999;
+  overflow-y: auto;
+  animation: screenFlash 2s infinite;
+}
+
+@keyframes screenFlash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.95; }
+}
+
+.matrix-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 0, 0.03) 2px, rgba(0, 255, 0, 0.03) 4px);
+  opacity: 0.3;
+  animation: matrixScroll 20s linear infinite;
+}
+
+@keyframes matrixScroll {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(100px); }
+}
+
+.hack-content {
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--space-32);
+  color: #00ff00;
+}
+
+.hack-header {
+  text-align: center;
+  margin-bottom: var(--space-32);
+}
+
+.hack-title {
+  font-size: var(--font-size-4xl);
+  color: #ff0000;
+  text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000;
+  margin-bottom: var(--space-16);
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.glitch {
+  position: relative;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.glitch::before {
+  animation: glitch-1 2s infinite;
+  color: #00ffff;
+  z-index: -1;
+}
+
+.glitch::after {
+  animation: glitch-2 2s infinite;
+  color: #ff00ff;
+  z-index: -2;
+}
+
+@keyframes glitch-1 {
+  0%, 100% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+}
+
+@keyframes glitch-2 {
+  0%, 100% { transform: translate(0); }
+  20% { transform: translate(2px, -2px); }
+  40% { transform: translate(2px, 2px); }
+  60% { transform: translate(-2px, -2px); }
+  80% { transform: translate(-2px, 2px); }
+}
+
+.hack-subtitle {
+  color: #ff3333;
+  font-size: var(--font-size-lg);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.hack-body {
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid #00ff00;
+  border-radius: var(--radius-lg);
+  padding: var(--space-32);
+  box-shadow: 0 0 30px rgba(0, 255, 0, 0.3), inset 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+.hacker-card {
+  text-align: center;
+  margin-bottom: var(--space-32);
+}
+
+.hacker-avatar {
+  font-size: 64px;
+  margin-bottom: var(--space-16);
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.hacker-name {
+  font-size: var(--font-size-3xl);
+  color: #00ff00;
+  margin-bottom: var(--space-8);
+  text-shadow: 0 0 10px #00ff00;
+}
+
+.hacker-title {
+  color: #ffff00;
+  font-size: var(--font-size-lg);
+  font-family: var(--font-family-mono);
+}
+
+.threat-box {
+  background: rgba(255, 0, 0, 0.2);
+  border: 1px solid #ff0000;
+  padding: var(--space-16);
+  border-radius: var(--radius-base);
+  margin-bottom: var(--space-24);
+  text-align: center;
+}
+
+.threat-level {
+  color: #ffff00;
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-8);
+}
+
+.critical {
+  color: #ff0000;
+  font-size: var(--font-size-xl);
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50%, 100% { opacity: 1; }
+  25%, 75% { opacity: 0.5; }
+}
+
+.countdown {
+  color: #00ff00;
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-2xl);
+}
+
+.hack-message {
+  background: rgba(255, 0, 0, 0.1);
+  border-left: 4px solid #ff0000;
+  padding: var(--space-20);
+  margin-bottom: var(--space-24);
+  font-size: var(--font-size-lg);
+  line-height: 1.6;
+}
+
+.ransom-amount {
+  color: #ffff00;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  text-shadow: 0 0 10px #ffff00;
+}
+
+.stolen-data {
+  margin-bottom: var(--space-32);
+}
+
+.stolen-data h3 {
+  color: #ff0000;
+  margin-bottom: var(--space-16);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.stolen-data ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-8);
+}
+
+.stolen-data li {
+  color: #00ff00;
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+}
+
+.hack-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
+
+.hack-btn {
+  padding: var(--space-16) var(--space-24);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  border: 2px solid;
+  border-radius: var(--radius-base);
+  cursor: pointer;
+  transition: all var(--duration-fast);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.hack-btn--pay {
+  background: rgba(0, 255, 0, 0.2);
+  color: #00ff00;
+  border-color: #00ff00;
+}
+
+.hack-btn--pay:hover {
+  background: rgba(0, 255, 0, 0.4);
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+}
+
+.hack-btn--lose {
+  background: rgba(255, 0, 0, 0.2);
+  color: #ff0000;
+  border-color: #ff0000;
+}
+
+.hack-btn--lose:hover {
+  background: rgba(255, 0, 0, 0.4);
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+}
+
+.hack-btn--contact {
+  background: rgba(255, 255, 0, 0.2);
+  color: #ffff00;
+  border-color: #ffff00;
+}
+
+.hack-btn--contact:hover {
+  background: rgba(255, 255, 0, 0.4);
+  box-shadow: 0 0 20px rgba(255, 255, 0, 0.5);
+}
+
+@media (max-width: 768px) {
+  .stolen-data ul {
+    grid-template-columns: 1fr;
+  }
+  
+  .hack-title {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .setting-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-16);
+  }
+}
+  </style>
+
+  <script src="app.js"></script>
 </body>
 </html>
