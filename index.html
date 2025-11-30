@@ -328,7 +328,7 @@
   </div>
 
   <!-- Force Logout Modal -->
-  <div id="forceLogoutModal" class="modal force-logout-modal" style="display: none;">
+  <div id="forceLogoutModal" class="modal force-logout-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 99999;">
     <div class="modal-content force-logout-content">
       <div class="force-logout-header">
         <h2 class="force-logout-title">⚠️ El sistema ha sido hackeado</h2>
@@ -1129,9 +1129,17 @@ td {
 
 /* Force Logout Modal */
 .force-logout-modal {
-  z-index: 10000 !important;
-  background-color: rgba(0, 0, 0, 0.9);
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 99999 !important;
+  background-color: rgba(0, 0, 0, 0.95) !important;
   backdrop-filter: blur(10px);
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 .force-logout-content {

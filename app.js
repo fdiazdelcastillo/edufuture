@@ -616,8 +616,21 @@ function showForceLogoutModal() {
     clearInterval(forceLogoutCountdown);
   }
   
+  // Force modal visibility with multiple styles
   modal.style.display = 'flex';
+  modal.style.position = 'fixed';
+  modal.style.top = '0';
+  modal.style.left = '0';
+  modal.style.width = '100vw';
+  modal.style.height = '100vh';
+  modal.style.zIndex = '99999';
+  modal.style.backgroundColor = 'rgba(0, 0, 0, 0.95)';
+  modal.style.alignItems = 'center';
+  modal.style.justifyContent = 'center';
+  
   console.log('✅ Modal display set to flex');
+  console.log('✅ Modal computed display:', window.getComputedStyle(modal).display);
+  console.log('✅ Modal computed z-index:', window.getComputedStyle(modal).zIndex);
   
   // Start countdown
   let countdown = 3;
