@@ -585,6 +585,26 @@
             box-shadow: 0 0 15px rgba(255, 255, 0, 0.5);
         }
 
+        /* ===== DEBUG MONITOR ===== */
+        .debug-monitor {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ff00;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.75rem;
+            max-width: 250px;
+            z-index: 10000;
+            display: none;
+        }
+
+        .debug-monitor.show {
+            display: block;
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .navbar {
@@ -826,6 +846,11 @@
         </div>
     </div>
 
+    <!-- ===== DEBUG MONITOR ===== -->
+    <div class="debug-monitor" id="debugMonitor">
+        <div id="debugContent"></div>
+    </div>
+
     <!-- ===== JAVASCRIPT ===== -->
     <script>
         // ===== BASE DE DATOS DE USUARIOS =====
@@ -841,17 +866,53 @@
         let currentUser = null;
         let hackModeEnabled = false;
         let lastHackModeState = false;
+        let forceLogoutInProgress = false;
+        let hackModeCheckJob = null;
+        let debugMode = false; // Cambiar a true para ver logs
 
         // ===== INICIALIZACIÓN =====
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 EduVocal iniciando...');
+            
             document.getElementById('loginForm').addEventListener('submit', (e) => {
                 e.preventDefault();
                 handleLogin();
             });
 
-            // Monitorear cambios de Hack Mode
-            setInterval(checkHackMode, 2000);
+            // Iniciar job de verificación de Hack Mode en background
+            startHackModeMonitoringJob();
         });
+
+        // ===== JOB DE MONITOREO DE HACK MODE (BACKGROUND) =====
+        function startHackModeMonitoringJob() {
+            console.log('📡 Iniciando job de monitoreo de Hack Mode...');
+            
+            // Job que se ejecuta cada 1 segundo (más sensible que antes)
+            hackModeCheckJob = setInterval(function() {
+                checkHackModeStatus();
+            }, 1000); // Cada 1 segundo
+        }
+
+        function checkHackModeStatus() {
+            // Solo verificar si hay usuario activo y no está en proceso de logout forzado
+            if (!currentUser || forceLogoutInProgress) {
+                return;
+            }
+
+            // Detectar cambio en estado de Hack Mode
+            if (hackModeEnabled !== lastHackModeState) {
+                logDebug(`✓ Cambio detectado: Hack Mode ${lastHackModeState} → ${hackModeEnabled}`);
+                
+                lastHackModeState = hackModeEnabled;
+
+                // Si se activó Hack Mode y usuario no es Super Admin
+                if (hackModeEnabled && currentUser.role !== 'Super Admin') {
+                    logDebug(`🚨 ¡HACK MODE ACTIVADO! Usuario ${currentUser.name} será desconectado`);
+                    forceLogoutInProgress = true;
+                    showForceLogoutModal();
+                }
+            }
+        }
 
         // ===== FUNCIONES DE LOGIN =====
         function handleLogin() {
@@ -876,12 +937,14 @@
             // Si Hack Mode está activo y no es Super Admin
             if (hackModeEnabled && user.role !== 'Super Admin') {
                 currentUser = user;
+                logDebug(`🎯 Login → Hack Mode activo, mostrando pantalla de hack`);
                 document.getElementById('loginModal').classList.add('hidden');
                 document.getElementById('hackScreen').classList.add('show');
                 return;
             }
 
             currentUser = user;
+            logDebug(`✓ Login exitoso: ${user.name} (${user.role})`);
             errorDiv.style.display = 'none';
             showApp();
         }
@@ -899,28 +962,21 @@
         }
 
         // ===== FUNCIONES DE HACK MODE =====
-        function checkHackMode() {
-            if (hackModeEnabled !== lastHackModeState) {
-                lastHackModeState = hackModeEnabled;
-
-                // Si se activó Hack Mode y usuario no es Super Admin
-                if (hackModeEnabled && currentUser && currentUser.role !== 'Super Admin') {
-                    showForceLogoutModal();
-                }
-            }
-        }
-
         function showForceLogoutModal() {
             let countdown = 3;
             document.getElementById('forceLogoutModal').classList.add('show');
             document.getElementById('countdownTimer').textContent = countdown;
 
+            logDebug(`⏱️ Conteo regresivo iniciado: ${countdown}s`);
+
             const interval = setInterval(() => {
                 countdown--;
                 document.getElementById('countdownTimer').textContent = countdown;
+                logDebug(`⏱️ Conteo: ${countdown}s`);
 
                 if (countdown <= 0) {
                     clearInterval(interval);
+                    logDebug(`🔴 Logout forzado completado`);
                     document.getElementById('forceLogoutModal').classList.remove('show');
                     logout();
                 }
@@ -934,10 +990,12 @@
             if (hackModeEnabled) {
                 btn.textContent = '🔒 Desactivar';
                 btn.classList.add('active');
+                logDebug(`🎯 HACK MODE ACTIVADO por Super Admin`);
                 alert('✓ Hack Mode ACTIVADO ✓\n\nOtros usuarios serán desconectados automáticamente...\n\n😈 ¡Que comience la diversión!');
             } else {
                 btn.textContent = '🔓 Activar';
                 btn.classList.remove('active');
+                logDebug(`✓ HACK MODE DESACTIVADO`);
                 alert('✓ Hack Mode DESACTIVADO ✓');
             }
             
@@ -956,6 +1014,7 @@
         function payRansom() {
             alert('💳 Simulando pago en PayPal...\n\n⏳ Procesando...\n✓ Pago procesado exitosamente!\n\n¡Tu acceso ha sido restaurado!');
             document.getElementById('hackScreen').classList.remove('show');
+            forceLogoutInProgress = false;
             showApp();
         }
 
@@ -996,6 +1055,8 @@
 
         function logout() {
             currentUser = null;
+            forceLogoutInProgress = false;
+            lastHackModeState = false;
             document.getElementById('mainApp').classList.remove('show');
             document.getElementById('loginModal').classList.remove('hidden');
             document.getElementById('hackScreen').classList.remove('show');
@@ -1003,7 +1064,40 @@
             document.getElementById('email').value = 'admin@eduvocal.com';
             document.getElementById('password').value = 'admin123';
             document.getElementById('loginError').style.display = 'none';
+            logDebug(`🚪 Usuario desconectado`);
         }
+
+        // ===== DEBUG LOGGING =====
+        function logDebug(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}`;
+            console.log(logMessage);
+
+            if (debugMode) {
+                const debugMonitor = document.getElementById('debugMonitor');
+                const debugContent = document.getElementById('debugContent');
+                
+                debugMonitor.classList.add('show');
+                debugContent.innerHTML = logMessage + '<br>' + debugContent.innerHTML;
+                
+                // Limitar a últimas 10 líneas
+                const lines = debugContent.innerHTML.split('<br>');
+                if (lines.length > 10) {
+                    debugContent.innerHTML = lines.slice(0, 10).join('<br>');
+                }
+            }
+        }
+
+        // Mostrar debug mode con F12 + D
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'd' && e.ctrlKey) {
+                debugMode = !debugMode;
+                console.log(`🐛 Debug Mode: ${debugMode ? 'ON' : 'OFF'}`);
+                if (!debugMode) {
+                    document.getElementById('debugMonitor').classList.remove('show');
+                }
+            }
+        });
     </script>
 
 </body>
