@@ -585,6 +585,28 @@
         <span aria-live="polite">⚠️ Modo sin conexión - Cambios se sincronizarán cuando recupere conexión</span>
     </div>
 
+    <!-- Login Modal -->
+    <div class="modal active" id="loginModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <h2 style="text-align: center; margin-bottom: 24px;">🎓 EduVocal - Acceso</h2>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="loginEmail" placeholder="ejemplo@email.com" value="admin@eduvocal.com">
+            </div>
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" id="loginPassword" placeholder="••••••••" value="admin123">
+            </div>
+            <button class="btn btn-primary" onclick="handleLogin()" style="margin-bottom: 12px;">Iniciar Sesión</button>
+            <div style="background: #ecf0f1; padding: 12px; border-radius: 8px; font-size: 0.85rem; color: #7f8c8d;">
+                <strong>Usuarios demo:</strong><br>
+                📧 admin@eduvocal.com / admin123 (Super Admin)<br>
+                📧 juan@example.com / user123 (Estudiante)<br>
+                📧 laura@example.com / instructor123 (Instructor)
+            </div>
+        </div>
+    </div>
+
     <!-- Header -->
     <header role="banner">
         <nav role="navigation" aria-label="Principal">
@@ -597,10 +619,11 @@
                 <li><a href="#" onclick="switchSection('languages')">Idiomas</a></li>
                 <li><a href="#" onclick="switchSection('skills')">Habilidades</a></li>
                 <li><a href="#" onclick="switchSection('progress')">Progreso</a></li>
-                <li><a href="#" onclick="switchSection('admin')">Admin</a></li>
+                <li id="adminNav" style="display: none;"><a href="#" onclick="switchSection('admin')">Admin</a></li>
             </ul>
             <div class="user-menu">
                 <button class="avatar" onclick="toggleUserMenu()" title="Menú de usuario">JD</button>
+                <button class="btn btn-secondary btn-small" onclick="logoutUser()" style="margin-left: 8px;">Salir</button>
             </div>
         </nav>
     </header>
@@ -1325,40 +1348,27 @@
         </section>
     </main>
 
-    <!-- Modal for Parental Controls -->
+    <!-- Modal for User Management -->
+    <div class="modal" id="userFormModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="toggleModal('userFormModal')">✕</button>
+            <h2>Gestión de Usuario</h2>
+            <div id="userFormContent"></div>
+        </div>
+    </div>
+
+    <!-- Modal for User Profile -->
     <div class="modal" id="parentalModal">
         <div class="modal-content">
             <button class="modal-close" onclick="toggleModal('parentalModal')">✕</button>
-            <h2>Control Parental</h2>
-            <p style="color: var(--color-text-light); margin-bottom: var(--space-24);">Supervisa el progreso académico de tu hijo</p>
+            <h2>Mi Perfil</h2>
+            <p style="color: var(--color-text-light); margin-bottom: var(--space-24);">Información de tu cuenta</p>
 
-            <div class="form-group">
-                <label>Estudiante</label>
-                <select>
-                    <option>-- Selecciona estudiante --</option>
-                    <option>Juan Díaz</option>
-                    <option>María García</option>
-                </select>
+            <div id="profileInfo" style="background: #ecf0f1; padding: 16px; border-radius: 8px; margin-bottom: 24px;">
+                <p id="profileDetails"></p>
             </div>
 
-            <div class="form-group">
-                <label>Límite de tiempo diario (minutos)</label>
-                <input type="number" value="120" min="30" max="480">
-            </div>
-
-            <div class="form-group">
-                <label>
-                    <input type="checkbox" checked> Recibir reportes semanales
-                </label>
-            </div>
-
-            <div class="form-group">
-                <label>
-                    <input type="checkbox" checked> Restricción de contenido sensible
-                </label>
-            </div>
-
-            <button class="btn btn-primary" onclick="toggleModal('parentalModal')">Guardar Controles</button>
+            <button class="btn btn-secondary" onclick="toggleModal('parentalModal')" style="width: 100%;">Cerrar</button>
         </div>
     </div>
 
@@ -1416,9 +1426,11 @@
                 { id: 7, name: 'Maestro Cognitivo', icon: '💡', unlocked: false }
             ],
             users: [
-                { id: 1, name: 'Juan Díaz', email: 'juan@example.com', role: 'Estudiante', status: true },
-                { id: 2, name: 'María García', email: 'maria@example.com', role: 'Estudiante', status: true },
-                { id: 3, name: 'Carlos López', email: 'carlos@example.com', role: 'Tutor Parental', status: true }
+                { id: 1, name: 'Admin System', email: 'admin@eduvocal.com', role: 'Super Admin', status: true, password: 'admin123' },
+                { id: 2, name: 'Juan Díaz', email: 'juan@example.com', role: 'Estudiante', status: true, password: 'user123' },
+                { id: 3, name: 'María García', email: 'maria@example.com', role: 'Estudiante', status: true, password: 'user456' },
+                { id: 4, name: 'Carlos López', email: 'carlos@example.com', role: 'Tutor Parental', status: true, password: 'parent123' },
+                { id: 5, name: 'Laura Rodríguez', email: 'laura@example.com', role: 'Instructor', status: true, password: 'instructor123' }
             ],
             courses: [
                 { id: 1, name: 'Inglés Básico', type: 'Idioma', lessons: 12, students: 234, status: 'Activo' },
@@ -1598,19 +1610,110 @@
             }
         }
 
+        // ===== AUTHENTICATION =====
+        let currentLoggedUser = null;
+
+        function loginUser(email, password) {
+            const user = appState.users.find(u => u.email === email && u.password === password);
+            if (user) {
+                currentLoggedUser = user;
+                appState.currentUser = user;
+                saveData('currentUser', user.id);
+                showAlert('success', `✓ Bienvenido ${user.name}`);
+                document.getElementById('loginModal').classList.remove('active');
+                updateUserInterface();
+                return true;
+            }
+            showAlert('error', '✕ Email o contraseña incorrectos');
+            return false;
+        }
+
+        function logoutUser() {
+            currentLoggedUser = null;
+            appState.currentUser = null;
+            saveData('currentUser', null);
+            showAlert('success', '✓ Sesión cerrada');
+            document.getElementById('loginModal').classList.add('active');
+            location.reload();
+        }
+
+        function updateUserInterface() {
+            const avatar = document.querySelector('.avatar');
+            if (avatar && currentLoggedUser) {
+                const initials = currentLoggedUser.name.split(' ').map(n => n[0]).join('').substring(0, 2);
+                avatar.textContent = initials;
+                avatar.title = currentLoggedUser.name;
+            }
+        }
+
         // ===== ADMIN FUNCTIONS =====
         function addNewUser() {
-            const newId = appState.users.length + 1;
+            if (!isSuperAdmin()) {
+                showAlert('error', '✕ Solo Super Admin puede agregar usuarios');
+                return;
+            }
+
+            const form = `
+                <div class="form-group">
+                    <label>Nombre completo</label>
+                    <input type="text" id="newUserName" placeholder="Ej: Juan Pérez">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="newUserEmail" placeholder="ejemplo@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="newUserPassword" placeholder="••••••••">
+                </div>
+                <div class="form-group">
+                    <label>Rol</label>
+                    <select id="newUserRole">
+                        <option>Estudiante</option>
+                        <option>Instructor</option>
+                        <option>Tutor Parental</option>
+                        <option>Administrador</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-primary" onclick="saveNewUser()" style="flex: 1;">Guardar</button>
+                    <button class="btn btn-secondary" onclick="toggleModal('userFormModal')" style="flex: 1;">Cancelar</button>
+                </div>
+            `;
+            document.getElementById('userFormContent').innerHTML = form;
+            toggleModal('userFormModal');
+        }
+
+        function saveNewUser() {
+            const name = document.getElementById('newUserName').value;
+            const email = document.getElementById('newUserEmail').value;
+            const password = document.getElementById('newUserPassword').value;
+            const role = document.getElementById('newUserRole').value;
+
+            if (!name || !email || !password) {
+                showAlert('warning', '⚠️ Por favor completa todos los campos');
+                return;
+            }
+
+            if (appState.users.find(u => u.email === email)) {
+                showAlert('error', '✕ Este email ya está registrado');
+                return;
+            }
+
             const newUser = {
-                id: newId,
-                name: `Usuario ${newId}`,
-                email: `user${newId}@example.com`,
-                role: 'Estudiante',
+                id: Math.max(...appState.users.map(u => u.id)) + 1,
+                name: name,
+                email: email,
+                role: role,
+                password: password,
                 status: true
             };
+
             appState.users.push(newUser);
+            saveData('users', appState.users);
             updateAdminUserTable();
-            showAlert('success', '✓ Nuevo usuario agregado');
+            toggleModal('userFormModal');
+            showAlert('success', `✓ Usuario "${name}" creado exitosamente`);
         }
 
         function updateAdminUserTable() {
@@ -1618,19 +1721,157 @@
             if (!tbody) return;
 
             tbody.innerHTML = appState.users.map(user => `
-                <tr>
+                <tr ${!user.status ? 'style="opacity: 0.6; background: rgba(231, 76, 60, 0.1);"' : ''}>
                     <td>#${String(user.id).padStart(3, '0')}</td>
-                    <td>${user.name}</td>
+                    <td>${user.name} ${user.role === 'Super Admin' ? '👑' : ''}</td>
                     <td>${user.email}</td>
-                    <td>${user.role}</td>
-                    <td><span class="badge-icon" style="width: 20px; height: 20px; font-size: 0.8rem; margin: 0;">${user.status ? '✓' : '✕'}</span></td>
-                    <td><button class="btn btn-secondary btn-small" onclick="editUser(${user.id})">Editar</button></td>
+                    <td>
+                        <span style="background: ${getRoleColor(user.role)}; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;">
+                            ${user.role}
+                        </span>
+                    </td>
+                    <td>
+                        <button onclick="toggleUserStatus(${user.id})" style="background: none; border: none; cursor: pointer; font-size: 1.2rem;" title="${user.status ? 'Bloquear' : 'Desbloquear'}">
+                            ${user.status ? '✅' : '🔒'}
+                        </button>
+                    </td>
+                    <td style="display: flex; gap: 4px;">
+                        <button class="btn btn-secondary btn-small" onclick="editUser(${user.id})">Editar</button>
+                        ${user.id !== 1 && currentLoggedUser?.role === 'Super Admin' ? `<button class="btn btn-secondary btn-small" style="background: #e74c3c; color: white;" onclick="deleteUser(${user.id})">Eliminar</button>` : ''}
+                    </td>
                 </tr>
             `).join('');
         }
 
+        function getRoleColor(role) {
+            const colors = {
+                'Super Admin': '#2180A4',
+                'Administrador': '#32b8c6',
+                'Instructor': '#27ae60',
+                'Tutor Parental': '#f39c12',
+                'Estudiante': '#7f8c8d'
+            };
+            return colors[role] || '#2180A4';
+        }
+
         function editUser(userId) {
-            showAlert('info', `Editando usuario #${userId}`);
+            if (!isSuperAdmin()) {
+                showAlert('error', '✕ Solo Super Admin puede editar usuarios');
+                return;
+            }
+
+            const user = appState.users.find(u => u.id === userId);
+            if (!user) return;
+
+            const form = `
+                <div class="form-group">
+                    <label>Nombre</label>
+                    <input type="text" id="editUserName" value="${user.name}">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="editUserEmail" value="${user.email}">
+                </div>
+                <div class="form-group">
+                    <label>Rol</label>
+                    <select id="editUserRole">
+                        <option ${user.role === 'Estudiante' ? 'selected' : ''}>Estudiante</option>
+                        <option ${user.role === 'Instructor' ? 'selected' : ''}>Instructor</option>
+                        <option ${user.role === 'Tutor Parental' ? 'selected' : ''}>Tutor Parental</option>
+                        <option ${user.role === 'Administrador' ? 'selected' : ''}>Administrador</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="editUserStatus" ${user.status ? 'checked' : ''}> Usuario Activo
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>Nueva contraseña (dejar en blanco para no cambiar)</label>
+                    <input type="password" id="editUserPassword" placeholder="••••••••">
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-primary" onclick="saveEditUser(${userId})" style="flex: 1;">Guardar</button>
+                    <button class="btn btn-secondary" onclick="toggleModal('userFormModal')" style="flex: 1;">Cancelar</button>
+                </div>
+            `;
+            document.getElementById('userFormContent').innerHTML = form;
+            toggleModal('userFormModal');
+        }
+
+        function saveEditUser(userId) {
+            const user = appState.users.find(u => u.id === userId);
+            if (!user) return;
+
+            const newName = document.getElementById('editUserName').value;
+            const newEmail = document.getElementById('editUserEmail').value;
+            const newRole = document.getElementById('editUserRole').value;
+            const newStatus = document.getElementById('editUserStatus').checked;
+            const newPassword = document.getElementById('editUserPassword').value;
+
+            if (!newName || !newEmail) {
+                showAlert('warning', '⚠️ Por favor completa los campos requeridos');
+                return;
+            }
+
+            user.name = newName;
+            user.email = newEmail;
+            user.role = newRole;
+            user.status = newStatus;
+            if (newPassword) user.password = newPassword;
+
+            saveData('users', appState.users);
+            updateAdminUserTable();
+            toggleModal('userFormModal');
+            showAlert('success', `✓ Usuario actualizado exitosamente`);
+        }
+
+        function toggleUserStatus(userId) {
+            if (!isSuperAdmin()) {
+                showAlert('error', '✕ Solo Super Admin puede bloquear/desbloquear usuarios');
+                return;
+            }
+
+            const user = appState.users.find(u => u.id === userId);
+            if (user) {
+                user.status = !user.status;
+                const statusText = user.status ? 'desbloqueado' : 'bloqueado';
+                showAlert('success', `✓ Usuario ${statusText} correctamente`);
+                updateAdminUserTable();
+                saveData('users', appState.users);
+            }
+        }
+
+        function deleteUser(userId) {
+            if (!isSuperAdmin()) {
+                showAlert('error', '✕ Solo Super Admin puede eliminar usuarios');
+                return;
+            }
+
+            if (userId === 1) {
+                showAlert('error', '✕ No puedes eliminar el Super Admin');
+                return;
+            }
+
+            if (confirm('¿Estás seguro de que quieres eliminar este usuario?')) {
+                appState.users = appState.users.filter(u => u.id !== userId);
+                updateAdminUserTable();
+                saveData('users', appState.users);
+                showAlert('success', '✓ Usuario eliminado');
+            }
+        }
+
+        function isSuperAdmin() {
+            return currentLoggedUser && currentLoggedUser.role === 'Super Admin';
+        }
+
+        function checkUserAccess() {
+            if (!currentLoggedUser || !currentLoggedUser.status) {
+                showAlert('error', '✕ Tu acceso ha sido bloqueado. Contacta al administrador.');
+                logoutUser();
+                return false;
+            }
+            return true;
         }
 
         function addNewCourse() {
@@ -1662,7 +1903,23 @@
         }
 
         function toggleUserMenu() {
-            toggleModal('parentalModal');
+            if (currentLoggedUser?.role === 'Super Admin' || currentLoggedUser?.role === 'Administrador') {
+                toggleModal('parentalModal');
+            } else {
+                showAlert('info', 'Acceso restringido a administradores');
+            }
+        }
+
+        function showUserProfile() {
+            if (!currentLoggedUser) return;
+            const profileInfo = `
+                <strong>Usuario Actual:</strong><br>
+                Nombre: ${currentLoggedUser.name}<br>
+                Email: ${currentLoggedUser.email}<br>
+                Rol: ${currentLoggedUser.role}<br>
+                Estado: ${currentLoggedUser.status ? '✓ Activo' : '🔒 Bloqueado'}
+            `;
+            showAlert('info', profileInfo);
         }
 
         // ===== GAMIFICATION =====
@@ -1722,6 +1979,23 @@
 
         // ===== INITIALIZATION =====
         document.addEventListener('DOMContentLoaded', () => {
+            // Check if user is logged in
+            const savedUserId = loadData('currentUser');
+            if (!savedUserId || !appState.users.find(u => u.id === savedUserId)) {
+                document.getElementById('loginModal').classList.add('active');
+                document.getElementById('dashboard').style.display = 'none';
+            } else {
+                const user = appState.users.find(u => u.id === savedUserId);
+                if (user && user.status) {
+                    currentLoggedUser = user;
+                    appState.currentUser = user;
+                    updateUserInterface();
+                } else {
+                    document.getElementById('loginModal').classList.add('active');
+                    document.getElementById('dashboard').style.display = 'none';
+                }
+            }
+
             updateOfflineBanner();
             updateXPDisplay();
             
