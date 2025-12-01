@@ -1272,14 +1272,16 @@
         try {
           // Ajusta esta parte si usas Render u otro host
           const protocol =
-            window.location.protocol === "https:" ? "wss:" : "ws:";
+            window.location.protocol === "https:" ? "https:" : "ws:";
           const host = window.location.hostname;
           const port = window.location.port || 3000;
           const isLocal = host === "localhost" || host === "127.0.0.1";
 
           const wsUrl = isLocal
             ? `${protocol}//${host}:3000`
-            : `${protocol}//${host}`;
+            : `${protocol}//eduvocal-backend.onrender.com
+
+`;
 
           console.log(`📡 Conectando a WebSocket: ${wsUrl}`);
           ws = new WebSocket(wsUrl);
