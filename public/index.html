@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EDUNACION - Plataforma Educativa</title>
+    <title>EduVocal - Plataforma Educativa con Hack Mode (WebSocket)</title>
     <style>
       * {
         margin: 0;
@@ -406,6 +406,79 @@
         font-weight: bold;
       }
 
+      .small-label {
+        display: block;
+        font-size: 0.8rem;
+        color: #7f8c8d;
+        margin-top: 6px;
+      }
+
+      .pill {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-right: 5px;
+      }
+
+      .pill-success {
+        background: #eafaf1;
+        color: #27ae60;
+      }
+
+      .pill-warning {
+        background: #fff4e5;
+        color: #e67e22;
+      }
+
+      .pill-danger {
+        background: #fdecea;
+        color: #c0392b;
+      }
+
+      .list {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+      }
+
+      .list-item {
+        padding: 10px 0;
+        border-bottom: 1px solid #ecf0f1;
+      }
+
+      .list-item:last-child {
+        border-bottom: none;
+      }
+
+      .list-item-title {
+        font-weight: 600;
+        color: #2c3e50;
+      }
+
+      .list-item-meta {
+        font-size: 0.85rem;
+        color: #7f8c8d;
+      }
+
+      .flex-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .badge-level {
+        padding: 3px 8px;
+        border-radius: 10px;
+        font-size: 0.75rem;
+        background: #ecf0f1;
+        color: #2c3e50;
+      }
+
       .admin-section {
         background: white;
         padding: 25px;
@@ -724,14 +797,8 @@
     <!-- ===== LOGIN MODAL ===== -->
     <div id="loginModal">
       <div class="login-container">
-        <div style="display: flex; justify-content: center">
-          <img
-            src="/logo.jpeg"
-            alt="Logo Image"
-            style="width: 150px; aspect-ratio: 224/192"
-          />
-        </div>
-        <p>Sistema de Gestión Educativa</p>
+        <h2>🎓 EduVocal</h2>
+        <p>Sistema de Gestión Educativa con WebSocket</p>
         <form id="loginForm">
           <div
             id="loginError"
@@ -815,13 +882,7 @@
     <!-- ===== MAIN APPLICATION ===== -->
     <div id="mainApp">
       <nav class="navbar">
-        <div style="display: flex; justify-content: center">
-          <img
-            src="/logo.jpeg"
-            alt="Logo Image"
-            style="width: 100px; aspect-ratio: 224/192"
-          />
-        </div>
+        <h1>🎓 EduVocal</h1>
         <div class="navbar-menu">
           <span class="nav-link active" onclick="showSection('dashboard')"
             >📊 Dashboard</span
@@ -850,27 +911,38 @@
       <div class="container">
         <!-- ===== DASHBOARD ===== -->
         <div id="dashboard" class="section active">
-          <h2>Bienvenido a EDUNACION</h2>
+          <h2>Bienvenido a EduVocal</h2>
           <p>
             Tu plataforma de orientación vocacional y desarrollo de habilidades
           </p>
           <div class="dashboard-grid">
             <div class="card">
               <h3>📚 Cursos Completados</h3>
-              <p>3</p>
+              <p id="dashCompletedCourses">0</p>
+              <span class="small-label" id="dashActiveCoursesLabel"></span>
             </div>
             <div class="card">
-              <h3>🧠 Habilidades</h3>
-              <p>7</p>
+              <h3>🧠 Habilidades Entrenadas</h3>
+              <p id="dashSkillsCount">0</p>
+              <span class="small-label" id="dashSkillsLevelLabel"></span>
             </div>
             <div class="card">
               <h3>🏆 Logros</h3>
-              <p>5</p>
+              <p id="dashAchievements">0</p>
+              <span class="small-label" id="dashNextMilestoneLabel"></span>
             </div>
             <div class="card">
               <h3>🔥 Racha</h3>
-              <p>12 días</p>
+              <p id="dashStreak">0 días</p>
+              <span class="small-label" id="dashConsistencyLabel"></span>
             </div>
+          </div>
+
+          <div class="list">
+            <h3 style="margin-bottom: 10px; color: #2c3e50">
+              📌 Próximas actividades
+            </h3>
+            <div id="upcomingActivities"></div>
           </div>
         </div>
 
@@ -878,19 +950,13 @@
         <div id="vocational" class="section">
           <h2>Orientación Vocacional</h2>
           <p>Carreras recomendadas según tu perfil</p>
-          <div class="dashboard-grid">
-            <div class="card">
-              <h3>💻 Desarrollador Software</h3>
-              <p>92%</p>
-            </div>
-            <div class="card">
-              <h3>🎨 Diseñador UX/UI</h3>
-              <p>88%</p>
-            </div>
-            <div class="card">
-              <h3>📊 Analista de Datos</h3>
-              <p>85%</p>
-            </div>
+          <div class="dashboard-grid" id="vocationalCards"></div>
+
+          <div class="list">
+            <h3 style="margin-bottom: 10px; color: #2c3e50">
+              🧩 Siguientes pasos sugeridos
+            </h3>
+            <div id="vocationalNextSteps"></div>
           </div>
         </div>
 
@@ -898,19 +964,13 @@
         <div id="languages" class="section">
           <h2>Cursos de Idiomas</h2>
           <p>Aprende nuevos idiomas con nuestros cursos interactivos</p>
-          <div class="dashboard-grid">
-            <div class="card">
-              <h3>🇬🇧 Inglés</h3>
-              <p>75%</p>
-            </div>
-            <div class="card">
-              <h3>🇨🇳 Mandarín</h3>
-              <p>33%</p>
-            </div>
-            <div class="card">
-              <h3>🇫🇷 Francés</h3>
-              <p>53%</p>
-            </div>
+          <div class="dashboard-grid" id="languagesCards"></div>
+
+          <div class="list">
+            <h3 style="margin-bottom: 10px; color: #2c3e50">
+              📖 Últimas lecciones vistas
+            </h3>
+            <div id="languagesLastLessons"></div>
           </div>
         </div>
 
@@ -918,19 +978,14 @@
         <div id="skills" class="section">
           <h2>Desarrollo de Habilidades</h2>
           <p>Entrena tus habilidades cognitivas y profesionales</p>
-          <div class="dashboard-grid">
-            <div class="card">
-              <h3>🧠 Memoria</h3>
-              <p>7.8/10</p>
-            </div>
-            <div class="card">
-              <h3>⚡ Velocidad Mental</h3>
-              <p>8.4/10</p>
-            </div>
-            <div class="card">
-              <h3>🔍 Concentración</h3>
-              <p>7.2/10</p>
-            </div>
+
+          <div class="dashboard-grid" id="skillsSummaryCards"></div>
+
+          <div class="list">
+            <h3 style="margin-bottom: 10px; color: #2c3e50">
+              🧠 Habilidades detalladas
+            </h3>
+            <div id="skillsDetailList"></div>
           </div>
         </div>
 
@@ -962,16 +1017,25 @@
             <h3>📊 Estadísticas</h3>
             <div class="admin-item">
               <strong>Usuarios Registrados:</strong>
-              <span>5</span>
+              <span id="adminTotalUsers">0</span>
             </div>
             <div class="admin-item">
               <strong>Usuarios Activos:</strong>
-              <span>1</span>
+              <span id="adminActiveUsers">0</span>
+            </div>
+            <div class="admin-item">
+              <strong>Estudiantes en riesgo:</strong>
+              <span id="adminRiskUsers">0</span>
             </div>
             <div class="admin-item">
               <strong>Hack Mode Activado:</strong>
               <span id="hackStatus">🔓 No</span>
             </div>
+          </div>
+
+          <div class="admin-section">
+            <h3>📜 Últimos eventos</h3>
+            <div id="adminEventsLog"></div>
           </div>
         </div>
       </div>
@@ -979,6 +1043,162 @@
 
     <!-- ===== JAVASCRIPT ===== -->
     <script>
+      // ===== MOCK DATA GLOBAL =====
+      const mockData = {
+        dashboard: {
+          completedCourses: 3,
+          activeCourses: 2,
+          skillsTrained: 7,
+          skillsLevelLabel: "Perfil equilibrado (cognitivas + profesionales)",
+          achievements: 5,
+          nextMilestone: 'Logro "Ruta STEM completada" a 2 cursos',
+          streakDays: 12,
+          consistencyLabel: "Muy constante esta semana",
+          upcomingActivities: [
+            {
+              title: "Lección 4 - Listening B1 (Inglés)",
+              due: "Hoy, 7:00 p.m.",
+              type: "Idioma",
+              priority: "Alta",
+            },
+            {
+              title: "Test rápido de orientación vocacional",
+              due: "Mañana",
+              type: "Orientación",
+              priority: "Media",
+            },
+            {
+              title: "Módulo de memoria de trabajo",
+              due: "En 2 días",
+              type: "Habilidad cognitiva",
+              priority: "Baja",
+            },
+          ],
+        },
+        vocational: {
+          careers: [
+            {
+              name: "Desarrollador/a de Software",
+              match: 92,
+              demand: "Alta",
+              keySkills: [
+                "Lógica",
+                "Pensamiento analítico",
+                "Resolución de problemas",
+              ],
+              recommendedPath: "Ruta Full Stack Junior",
+            },
+            {
+              name: "Diseñador/a UX/UI",
+              match: 88,
+              demand: "Alta",
+              keySkills: [
+                "Empatía",
+                "Diseño visual",
+                "Investigación de usuarios",
+              ],
+              recommendedPath: "Ruta UX Research + UI Design",
+            },
+            {
+              name: "Analista de Datos",
+              match: 85,
+              demand: "Media",
+              keySkills: [
+                "Estadística básica",
+                "Excel/Sheets",
+                "Visualización",
+              ],
+              recommendedPath: "Ruta Data Basics",
+            },
+          ],
+          nextSteps: [
+            "Completar el test de intereses profesionales ampliado.",
+            "Agendar una sesión de mentoría con un orientador.",
+            "Explorar 3 perfiles reales de profesionales en tu carrera mejor alineada.",
+          ],
+        },
+        languages: {
+          courses: [
+            {
+              code: "en",
+              name: "Inglés",
+              flag: "🇬🇧",
+              level: "B1",
+              progress: 75,
+              lastLesson:
+                "Listening - Comprensión de conversaciones cotidianas",
+              nextFocus: "Phrasal verbs más frecuentes",
+            },
+            {
+              code: "zh",
+              name: "Mandarín",
+              flag: "🇨🇳",
+              level: "A1",
+              progress: 33,
+              lastLesson: "Pronunciación inicial y tonos",
+              nextFocus: "Saludos y presentaciones básicas",
+            },
+            {
+              code: "fr",
+              name: "Francés",
+              flag: "🇫🇷",
+              level: "A2",
+              progress: 53,
+              lastLesson: "Vocabulario sobre la rutina diaria",
+              nextFocus: "Pasado compuesto (passé composé)",
+            },
+          ],
+        },
+        skills: {
+          summary: [
+            {
+              name: "Memoria",
+              score: 7.8,
+              status: "En desarrollo",
+              type: "Cognitiva",
+            },
+            {
+              name: "Velocidad mental",
+              score: 8.4,
+              status: "Fuerte",
+              type: "Cognitiva",
+            },
+            {
+              name: "Concentración",
+              score: 7.2,
+              status: "En desarrollo",
+              type: "Cognitiva",
+            },
+            {
+              name: "Comunicación",
+              score: 8.1,
+              status: "Fuerte",
+              type: "Profesional",
+            },
+            {
+              name: "Trabajo en equipo",
+              score: 7.5,
+              status: "En desarrollo",
+              type: "Profesional",
+            },
+          ],
+        },
+        admin: {
+          riskByEmail: {
+            "juan@example.com": "Alto",
+            "maria@example.com": "Medio",
+            "carlos@example.com": "Bajo",
+            "laura@example.com": "Bajo",
+          },
+          lastEvents: [
+            "Usuario Juan inició sesión desde Chrome (desktop).",
+            'Laura completó el módulo "Comunicación efectiva".',
+            "Admin activó vista de Orientación Vocacional.",
+            "Se registró una nueva sesión en Inglés B1.",
+          ],
+        },
+      };
+
       // ===== BASE DE DATOS DE USUARIOS =====
       const users = [
         {
@@ -1029,10 +1249,11 @@
       let ws = null;
       let wsConnectAttempts = 0;
       const maxReconnectAttempts = 5;
+      let hackModeActiveClient = false;
 
       // ===== INICIALIZACIÓN =====
       document.addEventListener("DOMContentLoaded", function () {
-        console.log("🚀 EDUNACION iniciando...");
+        console.log("🚀 EduVocal iniciando...");
 
         document.getElementById("loginForm").addEventListener("submit", (e) => {
           e.preventDefault();
@@ -1041,19 +1262,24 @@
 
         // Conectar WebSocket
         connectWebSocket();
+
+        // Pintar mock data inicial (aunque no haya usuario)
+        renderStaticMockData();
       });
 
       // ===== WEBSOCKET CONNECTION =====
       function connectWebSocket() {
         try {
+          // Ajusta esta parte si usas Render u otro host
           const protocol =
             window.location.protocol === "https:" ? "wss:" : "ws:";
+          const host = window.location.hostname;
+          const port = window.location.port || 3000;
+          const isLocal = host === "localhost" || host === "127.0.0.1";
 
-          // ✅ REEMPLAZA CON TU URL DE RENDER
-          const wsUrl =
-            window.location.hostname === "localhost"
-              ? `ws://localhost:3000`
-              : `https://eduvocal-backend.onrender.com`;
+          const wsUrl = isLocal
+            ? `${protocol}//${host}:3000`
+            : `${protocol}//${host}`;
 
           console.log(`📡 Conectando a WebSocket: ${wsUrl}`);
           ws = new WebSocket(wsUrl);
@@ -1070,8 +1296,9 @@
 
               if (data.type === "hackModeStatus") {
                 console.log(`📢 Estado recibido: Hack Mode = ${data.active}`);
+                hackModeActiveClient = data.active;
+                updateUIFromServer(hackModeActiveClient);
 
-                // Si es estudiante y hack mode se activó
                 if (
                   currentUser &&
                   currentUser.role !== "Super Admin" &&
@@ -1082,7 +1309,6 @@
                   forceLogoutInProgress = true;
                   showForceLogoutModal();
                 }
-                updateHackStatus();
               }
             } catch (error) {
               console.error("❌ Error procesando mensaje:", error);
@@ -1098,7 +1324,6 @@
             console.log("⚠️ WebSocket desconectado");
             updateWSIndicator(false);
 
-            // Intentar reconectar
             if (wsConnectAttempts < maxReconnectAttempts) {
               wsConnectAttempts++;
               console.log(
@@ -1165,9 +1390,266 @@
 
         if (currentUser.role === "Super Admin") {
           document.getElementById("adminLink").style.display = "inline-block";
-          loadUsersList();
-          updateHackStatus();
         }
+
+        // Re-render según el usuario
+        renderStaticMockData();
+      }
+
+      // ===== RENDER MOCK DATA =====
+      function renderStaticMockData() {
+        renderDashboard();
+        renderVocational();
+        renderLanguages();
+        renderSkills();
+        renderAdmin();
+      }
+
+      function renderDashboard() {
+        const d = mockData.dashboard;
+        document.getElementById("dashCompletedCourses").textContent =
+          d.completedCourses;
+        document.getElementById(
+          "dashActiveCoursesLabel"
+        ).textContent = `Tienes ${d.activeCourses} cursos activos ahora mismo.`;
+        document.getElementById("dashSkillsCount").textContent =
+          d.skillsTrained;
+        document.getElementById("dashSkillsLevelLabel").textContent =
+          d.skillsLevelLabel;
+        document.getElementById("dashAchievements").textContent =
+          d.achievements;
+        document.getElementById("dashNextMilestoneLabel").textContent =
+          d.nextMilestone;
+        document.getElementById(
+          "dashStreak"
+        ).textContent = `${d.streakDays} días`;
+        document.getElementById("dashConsistencyLabel").textContent =
+          d.consistencyLabel;
+
+        const activitiesContainer =
+          document.getElementById("upcomingActivities");
+        activitiesContainer.innerHTML = d.upcomingActivities
+          .map((a) => {
+            let pillClass = "pill-success";
+            if (a.priority === "Media") pillClass = "pill-warning";
+            if (a.priority === "Alta") pillClass = "pill-danger";
+
+            return `
+                    <div class="list-item">
+                        <div class="list-item-title">${a.title}</div>
+                        <div class="flex-row">
+                            <span class="list-item-meta">${a.type} · ${a.due}</span>
+                            <span class="pill ${pillClass}">${a.priority}</span>
+                        </div>
+                    </div>
+                `;
+          })
+          .join("");
+      }
+
+      function renderVocational() {
+        const v = mockData.vocational;
+        const container = document.getElementById("vocationalCards");
+        container.innerHTML = v.careers
+          .map((c) => {
+            let pillClass = "pill-success";
+            if (c.demand === "Media") pillClass = "pill-warning";
+            if (c.demand === "Baja") pillClass = "pill-danger";
+
+            return `
+                    <div class="card">
+                        <h3>${c.name}</h3>
+                        <p>${c.match}%</p>
+                        <span class="small-label">
+                            Afinidad con tu perfil · 
+                            <span class="pill ${pillClass}">Demanda ${
+              c.demand
+            }</span>
+                        </span>
+                        <span class="small-label">
+                            Habilidades clave: ${c.keySkills.join(", ")}
+                        </span>
+                        <span class="small-label">
+                            Ruta sugerida: <strong>${c.recommendedPath}</strong>
+                        </span>
+                    </div>
+                `;
+          })
+          .join("");
+
+        const stepsContainer = document.getElementById("vocationalNextSteps");
+        stepsContainer.innerHTML = v.nextSteps
+          .map(
+            (step) => `
+                <div class="list-item">
+                    <div class="list-item-title">• ${step}</div>
+                </div>
+            `
+          )
+          .join("");
+      }
+
+      function renderLanguages() {
+        const l = mockData.languages;
+        const cardsContainer = document.getElementById("languagesCards");
+        cardsContainer.innerHTML = l.courses
+          .map(
+            (lang) => `
+                <div class="card">
+                    <h3>${lang.flag} ${lang.name}</h3>
+                    <p>${lang.progress}%</p>
+                    <span class="small-label">
+                        Nivel actual: <span class="badge-level">${lang.level}</span>
+                    </span>
+                    <span class="small-label">
+                        Última lección: ${lang.lastLesson}
+                    </span>
+                    <span class="small-label">
+                        Próximo foco: <strong>${lang.nextFocus}</strong>
+                    </span>
+                </div>
+            `
+          )
+          .join("");
+
+        const lastLessonsContainer = document.getElementById(
+          "languagesLastLessons"
+        );
+        lastLessonsContainer.innerHTML = l.courses
+          .map(
+            (lang) => `
+                <div class="list-item">
+                    <div class="list-item-title">${lang.flag} ${lang.name} · Nivel ${lang.level}</div>
+                    <div class="list-item-meta">
+                        Última lección: ${lang.lastLesson}
+                        <br>
+                        Próximo foco: ${lang.nextFocus}
+                    </div>
+                </div>
+            `
+          )
+          .join("");
+      }
+
+      function renderSkills() {
+        const s = mockData.skills;
+        const summaryContainer = document.getElementById("skillsSummaryCards");
+
+        const cognitive = s.summary.filter((x) => x.type === "Cognitiva");
+        const professional = s.summary.filter((x) => x.type === "Profesional");
+
+        const avg = (arr) =>
+          arr.reduce((acc, v) => acc + v.score, 0) / (arr.length || 1);
+
+        const cogAvg = avg(cognitive).toFixed(1);
+        const profAvg = avg(professional).toFixed(1);
+
+        summaryContainer.innerHTML = `
+                <div class="card">
+                    <h3>🧠 Habilidades cognitivas</h3>
+                    <p>${cogAvg}/10</p>
+                    <span class="small-label">
+                        Incluye memoria, velocidad mental, concentración.
+                    </span>
+                </div>
+                <div class="card">
+                    <h3>💼 Habilidades profesionales</h3>
+                    <p>${profAvg}/10</p>
+                    <span class="small-label">
+                        Incluye comunicación, trabajo en equipo, liderazgo.
+                    </span>
+                </div>
+                <div class="card">
+                    <h3>🎯 Total habilidades entrenadas</h3>
+                    <p>${s.summary.length}</p>
+                    <span class="small-label">
+                        Habilidades con medición activa en la plataforma.
+                    </span>
+                </div>
+            `;
+
+        const detailContainer = document.getElementById("skillsDetailList");
+        detailContainer.innerHTML = s.summary
+          .map((skill) => {
+            let pillClass = "pill-success";
+            if (skill.status === "En desarrollo") pillClass = "pill-warning";
+
+            return `
+                    <div class="list-item">
+                        <div class="flex-row">
+                            <div>
+                                <div class="list-item-title">${skill.name} (${
+              skill.type
+            })</div>
+                                <div class="list-item-meta">
+                                    Puntaje: ${skill.score.toFixed(1)}/10
+                                </div>
+                            </div>
+                            <div>
+                                <span class="pill ${pillClass}">${
+              skill.status
+            }</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+          })
+          .join("");
+      }
+
+      function renderAdmin() {
+        const total = users.length;
+        const active = users.filter((u) => u.status).length;
+
+        const riskMap = mockData.admin.riskByEmail;
+
+        const riskUsers = Object.values(riskMap).filter(
+          (level) => level === "Alto"
+        ).length;
+
+        document.getElementById("adminTotalUsers").textContent = total;
+        document.getElementById("adminActiveUsers").textContent = active;
+        document.getElementById("adminRiskUsers").textContent = riskUsers;
+
+        const list = document.getElementById("usersList");
+        list.innerHTML = users
+          .map((u) => {
+            const risk = riskMap[u.email] || "Bajo";
+            let pillClass = "pill-success";
+            if (risk === "Medio") pillClass = "pill-warning";
+            if (risk === "Alto") pillClass = "pill-danger";
+
+            return `
+                    <div class="admin-item">
+                        <div>
+                            <strong>${u.name}</strong><br>
+                            <small style="color: #7f8c8d;">${u.email}</small>
+                            <br>
+                            <span class="role">${u.role}</span>
+                            <span class="pill ${pillClass}">Riesgo: ${risk}</span>
+                        </div>
+                        <span class="status ${
+                          u.status ? "status-active" : "status-inactive"
+                        }">
+                            ${u.status ? "✓ Activo" : "🔒 Bloqueado"}
+                        </span>
+                    </div>
+                `;
+          })
+          .join("");
+
+        const eventsContainer = document.getElementById("adminEventsLog");
+        eventsContainer.innerHTML = mockData.admin.lastEvents
+          .map(
+            (ev) => `
+                <div class="list-item">
+                    <div class="list-item-title">• ${ev}</div>
+                </div>
+            `
+          )
+          .join("");
+
+        updateHackStatus();
       }
 
       // ===== FUNCIONES DE HACK MODE =====
@@ -1199,14 +1681,14 @@
           return;
         }
 
-        // Enviar comando al servidor
+        const btn = document.getElementById("hackToggle");
+        const newState = !btn.classList.contains("active");
+
         ws.send(
           JSON.stringify({
             type: "toggleHackMode",
-            active: !document
-              .getElementById("hackToggle")
-              .classList.contains("active"),
-            adminName: currentUser.name,
+            active: newState,
+            adminName: currentUser ? currentUser.name : "Admin",
           })
         );
       }
@@ -1215,45 +1697,31 @@
         const status = document.getElementById("hackStatus");
         const btn = document.getElementById("hackToggle");
 
-        // Nota: El estado se actualiza cuando recibimos mensaje del servidor
-        // Por ahora mostramos estado local
-        if (btn && btn.classList.contains("active")) {
+        if (hackModeActiveClient) {
           if (status) {
             status.textContent = "✓ Sí (Activo)";
             status.style.color = "#e74c3c";
+          }
+          if (btn) {
+            btn.textContent = "🔒 Desactivar";
+            btn.classList.add("active");
           }
         } else {
           if (status) {
             status.textContent = "🔓 No";
             status.style.color = "#27ae60";
           }
-        }
-      }
-
-      // Listener para actualizar UI cuando recibimos estado del servidor
-      function updateUIFromServer(hackModeActive) {
-        const btn = document.getElementById("hackToggle");
-        const status = document.getElementById("hackStatus");
-
-        if (hackModeActive) {
-          btn.textContent = "🔒 Desactivar";
-          btn.classList.add("active");
-          if (status) {
-            status.textContent = "✓ Sí (Activo)";
-            status.style.color = "#e74c3c";
-          }
-        } else {
-          btn.textContent = "🔓 Activar";
-          btn.classList.remove("active");
-          if (status) {
-            status.textContent = "🔓 No";
-            status.style.color = "#27ae60";
+          if (btn) {
+            btn.textContent = "🔓 Activar";
+            btn.classList.remove("active");
           }
         }
       }
 
-      // Agregar listener al WebSocket para actualizar UI
-      // (Esta función se llamará desde el onmessage del WebSocket)
+      function updateUIFromServer(hackModeFlag) {
+        hackModeActiveClient = hackModeFlag;
+        updateHackStatus();
+      }
 
       // ===== FUNCIONES DE PANTALLA DE HACK =====
       function payRansom() {
@@ -1289,29 +1757,6 @@
           .querySelectorAll(".nav-link")
           .forEach((l) => l.classList.remove("active"));
         event.target.classList.add("active");
-      }
-
-      function loadUsersList() {
-        const list = document.getElementById("usersList");
-        list.innerHTML = users
-          .map(
-            (u) => `
-                <div class="admin-item">
-                    <div>
-                        <strong>${u.name}</strong><br>
-                        <small style="color: #7f8c8d;">${u.email}</small>
-                        <br>
-                        <span class="role">${u.role}</span>
-                    </div>
-                    <span class="status ${
-                      u.status ? "status-active" : "status-inactive"
-                    }">
-                        ${u.status ? "✓ Activo" : "🔒 Bloqueado"}
-                    </span>
-                </div>
-            `
-          )
-          .join("");
       }
 
       function logout() {
