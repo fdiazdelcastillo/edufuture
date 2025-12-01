@@ -1046,15 +1046,14 @@
       // ===== WEBSOCKET CONNECTION =====
       function connectWebSocket() {
         try {
-          // Detectar protocolo y host
           const protocol =
             window.location.protocol === "https:" ? "wss:" : "ws:";
-          const host = window.location.hostname;
-          const port =
-            window.location.port ||
-            (window.location.protocol === "https:" ? 443 : 80);
 
-          const wsUrl = `${protocol}//${host}:3000`;
+          // ✅ REEMPLAZA CON TU URL DE RENDER
+          const wsUrl =
+            window.location.hostname === "localhost"
+              ? `ws://localhost:3000`
+              : `https://eduvocal-backend.onrender.com`;
 
           console.log(`📡 Conectando a WebSocket: ${wsUrl}`);
           ws = new WebSocket(wsUrl);
